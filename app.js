@@ -1588,7 +1588,15 @@ function bindAccounts() {
     $("deleteMsg").textContent = "Checking it is you…";
     FB.emailSignIn(sess.email, pw).then(function () {
       $("deleteMsg").textContent = "Deleting…";
-      return FB.fsDelete(statePath()).then(function () { return FB.fsDelete(spinePath()); });
+      // The §6 sweep, in order (Security ruling, rules v2.2):
+      // state → spine → the aggregate shards → the Auth user.
+      // Erasure takes the shard: a uid-keyed row is the user's
+      // data however light its fields. aggSubs stays out — a
+      // payment-path record under its own retention policy.
+      return FB.fsDelete(statePath())
+        .then(function () { return FB.fsDelete(spinePath()); })
+        .then(function () { return FB.fsDelete("aggSignups/" + sess.uid); })
+        .then(function () { return FB.fsDelete("aggImports/" + sess.uid); });
     }).then(function () { return FB.deleteAccount(); })
       .then(function () {
         try { localStorage.removeItem(storeKey()); localStorage.removeItem("pace-last-uid"); } catch (e) {}
