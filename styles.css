@@ -427,18 +427,21 @@ html[data-cute="1"] .brand-mark { animation: wiggle 0.5s ease; }
 @keyframes wiggle { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-6deg); } 75% { transform: rotate(6deg); } }
 html[data-cute="1"] .add-btn { border-radius: 16px; }
 
-/* Phone: sidebar narrows to a rail beside the content; it never stacks.
-   It can still be hidden completely from the collapse button. */
+/* The content sliver (Ilse's nav ruling, 15 Oct): shown only
+   on phone widths while the menu is open — it covers the
+   squeezed content strip; one tap on it closes the menu. */
+#sbSliver { display: none; }
+/* Phone: the Muse-app shape (Ilse's ruling, 15 Oct) — the open
+   menu takes most of the screen, the content shrinks to a thin
+   sliver at the right edge, and tapping the sliver (or the
+   close button) brings the full content back. Hidden on every
+   load still; opening is per session, from the floating mark. */
 @media (max-width: 700px) {
-  #sidebar { width: 78px; padding: 14px 8px; }
-  .brand-name { display: none; }
-  .brand { flex-direction: column; justify-content: center; gap: 0; padding: 2px 0; }
-  #sbCollapse { padding: 2px; }
-  #sbCollapse .ico { width: 16px; height: 16px; }
-  .side-item { flex-direction: column; gap: 4px; padding: 9px 2px; font-size: 11px; text-align: center; }
-  .side-item .side-label { display: block; }
-  .side-ring, .side-level { display: none; }
-  .side-foot { display: none; }
+  #sidebar { width: min(84vw, 340px); padding: 18px 14px; }
+  html:not([data-sb="collapsed"]) #sbSliver {
+    display: block; position: fixed; top: 0; right: 0; bottom: 0;
+    width: calc(100vw - min(84vw, 340px)); z-index: 45; cursor: pointer;
+  }
   html[data-sb="collapsed"] #main { padding-left: 66px; }
   #main { padding: 16px 16px 56px; }
   .fc .fc-daygrid-day-frame { min-height: 80px; }
