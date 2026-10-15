@@ -435,6 +435,53 @@ html[data-cute="1"] .add-btn { border-radius: 16px; }
 .door-mark { display: flex; align-items: center; gap: 9px; padding: 2px 0 10px; }
 .door-mark .brand-mark { width: 30px; height: 30px; }
 .door-name { font-family: var(--font-display); font-weight: 800; font-size: 21px; letter-spacing: -0.01em; }
+/* The refined door (mockup of record): icon-only social
+   buttons on top, one email field + a round next arrow; the
+   password lives on step 2 only. */
+.door-social { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.door-social-btn { height: 52px; border: 1px solid var(--hair); border-radius: 14px; background: var(--card); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--ink); }
+.door-social-btn svg { width: 22px; height: 22px; }
+.door-email-row { display: flex; gap: 10px; align-items: stretch; }
+.door-email-row input { flex: 1; min-width: 0; height: 52px; border: 1px solid var(--hair); border-radius: 14px; background: var(--card); color: var(--ink); padding: 0 14px; font: inherit; }
+.door-arrow { width: 52px; height: 52px; flex: none; border: 0; border-radius: 50%; background: var(--accent); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.door-arrow svg { width: 22px; height: 22px; }
+.door-note { text-align: center; color: var(--ink-3); font-size: 13px; margin: 10px 0 2px; line-height: 1.5; }
+.door-email-pill { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: color-mix(in srgb, var(--accent) 9%, var(--card)); border: 1px solid var(--hair); border-radius: 12px; padding: 9px 8px 9px 14px; margin-bottom: 12px; font-weight: 500; }
+.pw-wrap { position: relative; display: block; }
+.pw-wrap input { width: 100%; padding-right: 46px; }
+.pw-eye { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border: 0; background: none; color: var(--ink-3); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.pw-eye svg { width: 20px; height: 20px; }
+/* THE DOOR PAGE (v4): the sign-up is the whole page — big,
+   centred, nothing else around it. */
+.sheet.door-page { background: var(--bg, #F3F5FA); align-items: flex-start; overflow-y: auto; }
+.door-inner { width: 100%; max-width: 430px; margin: auto; padding: 48px 26px 40px; }
+.door-hero { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; margin-bottom: 28px; }
+.door-tile { width: 86px; height: 86px; border-radius: 24px; background: color-mix(in srgb, var(--accent) 16%, var(--card)); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+.door-tile .brand-mark { width: 52px; height: 52px; }
+.door-title { font-family: var(--font-display); font-weight: 800; font-size: 34px; letter-spacing: -0.01em; }
+.door-sub { color: var(--ink-2); font-size: 16px; }
+.door-page .door-social-btn { height: 58px; border-radius: 16px; }
+.door-divider { display: flex; align-items: center; gap: 12px; color: var(--ink-3); font-size: 14px; margin: 20px 0 14px; }
+.door-divider::before, .door-divider::after { content: ""; flex: 1; height: 1px; background: var(--hair); }
+.door-email { width: 100%; height: 56px; border: 1px solid var(--hair); border-radius: 16px; background: var(--card); color: var(--ink); padding: 0 16px; font: inherit; font-size: 16px; }
+.door-arrow-row { display: flex; justify-content: center; margin-top: 22px; }
+.door-page .door-arrow { width: 66px; height: 66px; }
+.door-page .door-arrow svg { width: 27px; height: 27px; }
+.door-explore { border: 0; background: none; color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; padding: 0; text-decoration: underline; text-underline-offset: 3px; }
+.door-topbar { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
+.door-topbar .brand-mark { width: 30px; height: 30px; }
+.door-topname { font-family: var(--font-display); font-weight: 800; font-size: 19px; }
+.door-back { width: 42px; height: 42px; flex: none; border: 1px solid var(--hair); border-radius: 50%; background: var(--card); color: var(--ink); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.door-back svg { width: 19px; height: 19px; }
+/* THE TOUR (v4): Skip's pop-up sits IN THE MIDDLE of the
+   app; at the menu stop it docks beside the open menu. */
+#guideSheet { align-items: center; }
+#guideSheet .guide-card { border-radius: 22px; margin: 0 14px; position: relative; padding-top: 44px; overflow: visible; max-height: none; }
+#guideSheet #guideArt { position: absolute; top: -34px; left: 50%; transform: translateX(-50%); width: 76px; height: 76px; border-radius: 50%; background: var(--card); border: 1px solid var(--hair); box-shadow: 0 8px 20px rgba(23, 32, 64, 0.14); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+#guideSheet #guideArt svg { width: 62px; height: auto; }
+#guideSheet[data-dock="menu"] { align-items: flex-end; justify-content: flex-start; }
+#guideSheet[data-dock="menu"] .guide-card { margin: 0 0 14px 14px; max-width: 330px; }
+.tour-name-input { width: 100%; height: 50px; border: 1px solid var(--hair); border-radius: 14px; background: var(--card); color: var(--ink); padding: 0 14px; font: inherit; font-size: 16px; margin-top: 4px; }
 /* The content sliver (the nav ruling, 15 Oct): shown only
    on phone widths while the menu is open — it covers the
    squeezed content strip; one tap on it closes the menu. */
