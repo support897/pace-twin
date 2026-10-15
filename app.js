@@ -1278,19 +1278,46 @@ var GUIDE_STEPS = [
   { pose: "welcome", bubble: "We cross at your pace.", next: "Next" },
   { pose: "welcome", bubble: "This calendar helps people that are overwhelmed, or with ADHD and problems getting things done.", next: "Next" },
   { pose: "point", bubble: "Pick a look you like.", next: "Next", themes: true },
-  { pose: "celebrate", bubble: "Add one small thing.", next: "Add a task", last: true }
+  { pose: "celebrate", bubble: "Add one small thing.", next: "Done ✓", last: true }
 ];
+/* THE TOUR (v4 shape): Skip's pop-up tours the app from the
+   middle of the screen. Step 1 asks the NAME when the
+   account has none (there is no separate name moment); then
+   the menu stop (the card docks beside the open menu); then
+   the app's areas; last stop Done. The X or "Skip tour"
+   closes it any time; it runs on the first visit only. */
+function tourNeedsName() { return !!(ACTIVE_UID && FB.configured && !(state.settings.profileName || "").trim()); }
+var TOUR = [];
+function buildTour() {
+  TOUR = [];
+  if (tourNeedsName()) TOUR.push({ kind: "name", pose: "welcome", bubble: "Ahoy! I'm Skip. Welcome aboard! What's your name?", next: "Next" });
+  TOUR.push({ kind: "step", pose: GUIDE_STEPS[0].pose, bubble: GUIDE_STEPS[0].bubble, next: "Next" });
+  TOUR.push({ kind: "menu", pose: "point", bubble: "This is your menu — everything lives here.", next: "Next" });
+  for (var i = 1; i < GUIDE_STEPS.length; i++) TOUR.push(Object.assign({ kind: "step" }, GUIDE_STEPS[i]));
+}
 var guideStep = 0;
 function showGuide(step) {
+  if (!TOUR.length) buildTour();
   guideStep = step;
-  var s = GUIDE_STEPS[step];
+  var s = TOUR[step];
   $("guideArt").innerHTML = skipSvg(s.pose);
   $("guideBubble").textContent = s.bubble;
   $("guideNext").textContent = s.next;
   $("guideImport").hidden = !s.last || DEMO_SESSION;
-  $("guideDots").innerHTML = GUIDE_STEPS.map(function (_, i) { return '<span class="g-dot' + (i === step ? " is-on" : "") + '"></span>'; }).join("");
+  $("guideDots").innerHTML = TOUR.map(function (_, i) { return '<span class="g-dot' + (i === step ? " is-on" : "") + '"></span>'; }).join("");
+  // The menu stop: open the menu and dock the card beside it.
+  var sheet = $("guideSheet");
+  if (s.kind === "menu") {
+    document.documentElement.removeAttribute("data-sb");
+    sheet.setAttribute("data-dock", "menu");
+  } else {
+    sheet.removeAttribute("data-dock");
+    applySidebar();
+  }
   var ex = $("guideExtra");
-  if (s.themes) {
+  if (s.kind === "name") {
+    ex.innerHTML = '<input type="text" id="tourName" class="tour-name-input" autocomplete="name" placeholder="Your name" aria-label="Your name">';
+  } else if (s.themes) {
     /* The guide offers a curated set of looks (the photo modes are
        not picks; Brand joined the set with Law E). */
     var GUIDE_THEMES = ["white", "dark", "blush", "sky", "mint", "lavender", "brand"];
@@ -1305,17 +1332,32 @@ function showGuide(step) {
 }
 function closeGuide() {
   $("guideSheet").hidden = true;
+  $("guideSheet").removeAttribute("data-dock");
+  applySidebar();
+  TOUR = [];
   if (!state.settings.guideDone) { state.settings.guideDone = true; save(); toast("See you at the dock."); }
 }
-function maybeGuide() { if (!state.settings.guideDone) showGuide(0); }
+function maybeGuide() { if (!state.settings.guideDone) { buildTour(); showGuide(0); } }
 $("guideClose").addEventListener("click", closeGuide);
 $("guideSkip").addEventListener("click", closeGuide);
 $("guideNext").addEventListener("click", function () {
-  var s = GUIDE_STEPS[guideStep];
-  if (s.last) { closeGuide(); $("addBtn").click(); }
+  var s = TOUR[guideStep];
+  if (!s) return;
+  if (s.kind === "name") {
+    // The tour's first stop IS the name ask: Next carries
+    // whatever is typed onto the profile (empty = skipped
+    // in the moment; Settings keeps the name row forever).
+    var inp = $("tourName");
+    var nm = inp ? inp.value.trim().slice(0, 60) : "";
+    if (nm) {
+      state.settings.profileName = nm; save(); renderAccount();
+      toast("Hi " + nm.split(/\s+/)[0] + " — you're in.");
+    }
+  }
+  if (s.last || guideStep >= TOUR.length - 1) closeGuide();
   else showGuide(guideStep + 1);
 });
-$("guideAgain").addEventListener("click", function () { showGuide(0); });
+$("guideAgain").addEventListener("click", function () { TOUR = []; buildTour(); showGuide(0); });
 
 /* ---------- bring my calendar in (shared module: IMPORT-DESIGN.md) ---------- */
 var DEMO_SESSION = /[?&]demo=1\b/.test(location.search) || !!(state.settings && state.settings.demo);
@@ -1478,17 +1520,22 @@ function reconcileAccount() {
     maybeJoinDoor();
   }).catch(function () { renderAccount(); });
 }
-/* Door-first joining: after the door, ONE question — the
-   name — on its own screen, once, then straight into the
-   app (the guest-pot door follows it). A name carried by a
-   provider (the stash) or already on the profile skips the
-   screen; a skip is remembered on this device. */
+/* Door-first joining, v4: after the door the user is inside
+   the app and Skip's TOUR asks the name as its first stop.
+   A fresh account's tour includes it automatically (the
+   guide hasn't run for this state). An account whose tour
+   already ran but still has no name gets the name stop on
+   its own — once per account (the stamp is per ACCOUNT,
+   not per device, so a second person joining on the same
+   phone is still asked). The pot door follows either way. */
 function maybeJoinDoor() {
   if (!ACTIVE_UID || state.settings.profileName) { maybePotDoor(); return; }
-  // The "asked" stamp is per ACCOUNT, not per device — a
-  // second person joining on the same device is still asked.
+  if (!state.settings.guideDone) { maybePotDoor(); return; } // the coming tour asks it
   try { if (localStorage.getItem("pace-name-asked") === ACTIVE_UID) { maybePotDoor(); return; } } catch (e) {}
-  $("nameSheet").hidden = false;
+  try { localStorage.setItem("pace-name-asked", ACTIVE_UID); } catch (e) {}
+  TOUR = [{ kind: "name", pose: "welcome", bubble: "Ahoy! I'm Skip. What's your name?", next: "Done ✓", last: true }];
+  showGuide(0);
+  maybePotDoor();
 }
 /* The name asked at sign-up (or carried by a Google door)
    lands on the profile AFTER reconcile settles — adopting it
@@ -1577,6 +1624,10 @@ function renderAccount() {
 function openAuth() {
   if (!FB.configured) return;
   $("authMsg").textContent = "";
+  $("authMsg1").textContent = "";
+  $("authPass").value = "";
+  $("doorStep1").hidden = false;
+  $("doorStep2").hidden = true;
   $("appleBtn").hidden = !(window.PACE_FB_CONFIG && window.PACE_FB_CONFIG.appleEnabled);
   $("authSheet").hidden = false;
 }
@@ -1617,22 +1668,36 @@ function bindAccounts() {
       });
   };
   $("authGo").addEventListener("click", doDoor);
-  // The name screen: one question, then straight into the app.
-  var finishNameAsk = function () {
-    $("nameSheet").hidden = true;
-    try { localStorage.setItem("pace-name-asked", ACTIVE_UID || ""); } catch (e) {}
-    maybePotDoor();
+  $("authPass").addEventListener("keydown", function (e) { if (e.key === "Enter") doDoor(); });
+  // The door's two steps (the refined shape): the arrow
+  // carries a plausible email to the password step; Change
+  // walks back. Enter on the email does what the arrow does.
+  var doorNext = function () {
+    var email = $("authEmail").value.trim();
+    if (!email || email.indexOf("@") < 1) { $("authMsg1").textContent = "That email address does not look right."; return; }
+    $("authMsg1").textContent = "";
+    $("doorEmailEcho").textContent = email;
+    $("doorStep1").hidden = true;
+    $("doorStep2").hidden = false;
+    $("authPass").focus();
   };
-  $("nameAskGo").addEventListener("click", function () {
-    var nm = $("nameAsk").value.trim().slice(0, 60);
-    if (!nm) { $("nameMsg").textContent = "Add your name — it's how we'll say hello."; return; }
-    state.settings.profileName = nm; save(); renderAccount();
-    var wn = nm.split(/\s+/)[0];
-    if (wn && !$("welcome").hidden) $("welcomeTitle").textContent = "Welcome to Pace Calendar, " + wn;
-    toast("Hi " + wn + " — you're in.");
-    finishNameAsk();
+  $("doorNext").addEventListener("click", doorNext);
+  $("authEmail").addEventListener("keydown", function (e) { if (e.key === "Enter") doorNext(); });
+  $("doorChange").addEventListener("click", function () {
+    $("doorStep2").hidden = true;
+    $("doorStep1").hidden = false;
+    $("authEmail").focus();
   });
-  $("nameAskSkip").addEventListener("click", finishNameAsk);
+  $("pwEye").addEventListener("click", function () {
+    var f = $("authPass");
+    f.type = f.type === "password" ? "text" : "password";
+    f.focus();
+  });
+  $("doorBack").addEventListener("click", function () {
+    $("doorStep2").hidden = true;
+    $("doorStep1").hidden = false;
+    $("authEmail").focus();
+  });
   $("authReset").addEventListener("click", function () {
     var email = $("authEmail").value.trim();
     if (!email) { authBusy("Type your email above first, then tap Forgot password."); return; }
