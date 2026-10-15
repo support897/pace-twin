@@ -67,6 +67,7 @@
     "Broken down. Only the first step matters right now.": "Dividido. Solo importa el primer paso ahora.",
     "Brought to today. Only because you asked.": "Traído a hoy. Solo porque lo pediste.",
     "Calendar brought in.": "Calendario traído.",
+    "Calendar": "Calendario",
     "Cancel": "Cancelar",
     "Change": "Cambiar",
     "Checking it is you…": "Comprobando que eres tú…",
