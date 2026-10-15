@@ -1435,9 +1435,14 @@ function reconcileAccount() {
         try { adoptStateObject(JSON.parse(doc.stateJson)); } catch (e) {}
       }
       renderAccount();
-    } else {
-      maybePotDoor();
     }
+    // The door is decided HERE, after any adoption — and by
+    // CONTENT, not by the state doc's existence: a fresh
+    // account's own first sync writes its (empty) state doc
+    // while this reconcile is still fetching, so "no doc" is a
+    // race the door loses on real networks (live-caught on the
+    // twin journey: the door never fired, mock always won).
+    maybePotDoor();
   }).catch(function () { renderAccount(); });
 }
 /* The door's stamps key to the POT'S GENERATION (Security's
@@ -1454,6 +1459,10 @@ function maybePotDoor() {
   var pot = guestPot();
   if (!pot) return;
   if (localStorage.getItem("pace-pot-offered") === potGeneration(pot)) return;
+  // An account holding real content of its own is never
+  // offered the pot — the door is for empty-handed accounts.
+  var ownReal = (state.tasks || []).some(function (t) { return t && t.source !== "sample"; }) || (state.todos || []).length > 0 || (state.habits || []).length > 0;
+  if (ownReal) return;
   var n = (pot.tasks || []).length;
   $("potText").textContent = "This device has a guest calendar on it (" + n + (n === 1 ? " event" : " events") + ", plus its lists). Bring it into your account, or start fresh — the guest copy stays on the device either way until you say.";
   $("potSheet").hidden = false;
