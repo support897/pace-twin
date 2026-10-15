@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f3f5fa">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Pace Calendar</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="stylesheet" href="styles.css">
+<script>
+/* Paint the saved look before anything renders, so there is no flash. */
+try {
+  var s = JSON.parse(localStorage.getItem("calmcal-v1") || "null");
+  var a = (s && s.settings && s.settings.appearance) || {};
+  document.documentElement.setAttribute("data-theme", a.theme || "white");
+  if (a.cute) document.documentElement.setAttribute("data-cute", "1");
+  if (s && s.settings && s.settings.sidebarCollapsed) document.documentElement.setAttribute("data-sb", "collapsed");
+} catch (e) { document.documentElement.setAttribute("data-theme", "white"); }
+</script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-logo" viewBox="0 0 240 240">  <!-- Pace Calendar mark: variant D finished (Ilse approved 14 Oct 2026).
+       Calendar page joined into Skip's hull like a cabin. Board palette. -->
+  <path d="M24 210 q16 -13 32 0 t32 0 t32 0 t32 0 t32 0 t32 0" fill="none" stroke="#AEB8EC" stroke-width="9" stroke-linecap="round"/>
+  <path d="M38 146 H202 L172 198 H68 Z" fill="#5B6BD5" stroke="#21392E" stroke-width="7" stroke-linejoin="round"/>
+  <line x1="120" y1="16" x2="120" y2="58" stroke="#21392E" stroke-width="6.5" stroke-linecap="round"/>
+  <rect x="64" y="56" width="112" height="114" rx="12" fill="#FAF4E4" stroke="#21392E" stroke-width="7"/>
+  <path d="M64 68 a12 12 0 0 1 12 -12 h88 a12 12 0 0 1 12 12 v15 H64 Z" fill="#5B6BD5"/>
+  <line x1="64" y1="83" x2="176" y2="83" stroke="#21392E" stroke-width="5"/>
+  <circle cx="90" cy="50" r="10" fill="none" stroke="#21392E" stroke-width="6.5"/>
+  <circle cx="150" cy="50" r="10" fill="none" stroke="#21392E" stroke-width="6.5"/>
+  <path d="M120 15 L151 24.5 L120 34 Z" fill="#2F7D4F"/>
+  <g fill="#21392E">
+    <circle cx="84" cy="103" r="4.2"/><circle cx="96" cy="103" r="4.2"/><circle cx="108" cy="103" r="4.2"/><circle cx="120" cy="103" r="4.2"/><circle cx="132" cy="103" r="4.2"/><circle cx="144" cy="103" r="4.2"/><circle cx="156" cy="103" r="4.2"/>
+    <circle cx="84" cy="121" r="4.2"/><circle cx="96" cy="121" r="4.2"/><circle cx="108" cy="121" r="4.2"/><circle cx="120" cy="121" r="4.2"/><circle cx="132" cy="121" r="4.2"/><circle cx="144" cy="121" r="4.2"/>
+  </g>
+  <circle cx="156" cy="121" r="4.2" fill="#F0A868"/>
+  <circle cx="106" cy="143" r="5.2" fill="#21392E"/><circle cx="134" cy="143" r="5.2" fill="#21392E"/>
+  <path d="M110 153 q10 8 20 0" fill="none" stroke="#21392E" stroke-width="5" stroke-linecap="round"/>
+</symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+    <symbol id="i-chevl" viewBox="0 0 24 24"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
+    <symbol id="i-cam" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></symbol>
+  </defs>
+    <symbol id="i-todo" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></symbol>
+    <symbol id="i-habits" viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></symbol>
+    <symbol id="i-calplus" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M12 13v6M9 16h6"/></symbol>
+    <symbol id="i-h-drop" viewBox="0 0 24 24"><path d="M12 2.7l5.66 5.66a8 8 0 1 1-11.31 0z"/></symbol>
+    <symbol id="i-h-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></symbol>
+    <symbol id="i-h-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></symbol>
+    <symbol id="i-h-book" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol>
+    <symbol id="i-h-coffee" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><path d="M6 1v3M10 1v3M14 1v3"/></symbol>
+    <symbol id="i-h-music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
+    <symbol id="i-h-star" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+    <symbol id="i-h-zap" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+    <symbol id="i-h-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01M15 9h.01"/></symbol>
+    <symbol id="i-h-wind" viewBox="0 0 24 24"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></symbol>
+    <symbol id="i-h-activity" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+</svg>
+<div id="app">
+  <aside id="sidebar" aria-label="Menu">
+    <div class="brand">
+      <svg class="brand-mark" aria-hidden="true"><use href="#i-logo"/></svg>
+      <span class="brand-name">Pace Calendar</span>
+      <button id="sbCollapse" class="icon-btn" aria-label="Hide the menu" title="Hide the menu"><svg class="ico"><use href="#i-chevl"/></svg></button>
+    </div>
+    <nav>
+      <div class="side-group">Plan</div>
+      <button class="side-item is-active" data-panel="calendar"><svg class="ico side-ico"><use href="#i-cal"/></svg><span class="side-label">Calendar</span></button>
+      <button class="side-item" data-panel="progress"><svg class="ico side-ico"><use href="#i-chart"/></svg><span class="side-label">Progress</span></button>
+      <div class="side-group">Lists</div>
+      <button class="side-item" data-panel="todo"><svg class="ico side-ico"><use href="#i-todo"/></svg><span class="side-label">To do</span></button>
+      <button class="side-item" data-panel="habits"><svg class="ico side-ico"><use href="#i-habits"/></svg><span class="side-label">Habits</span></button>
+      <div class="side-group">Add + app</div>
+      <button class="side-item" data-panel="capture"><svg class="ico side-ico"><use href="#i-chat"/></svg><span class="side-label">Talk to it</span></button>
+      <button class="side-item" data-panel="settings"><svg class="ico side-ico"><use href="#i-gear"/></svg><span class="side-label">Settings</span></button>
+    </nav>
+    <div class="side-foot">
+      <div class="side-ring" title="Today, at your pace">
+        <svg class="ring" viewBox="0 0 44 44" aria-hidden="true"><circle class="ring-bg" cx="22" cy="22" r="18"/><circle class="ring-fg" id="ringFg" cx="22" cy="22" r="18"/></svg>
+        <div class="ring-text"><strong id="ringPct">0%</strong><span>done today</span></div>
+      </div>
+      <div class="side-level" id="sideLevel" title="Today's level"></div>
+    </div>
+  </aside>
+  <button id="sbExpand" class="expand-btn" aria-label="Show the menu" title="Show the menu"><svg class="brand-mark sm" aria-hidden="true"><use href="#i-logo"/></svg></button>
+
+  <main id="main">
+    <!-- CALENDAR PANEL -->
+    <section class="panel is-active" id="panel-calendar">
+      <header class="topbar">
+        <button id="monthTitle" class="month-title" title="Back to today">October 2026</button>
+        <div class="top-actions">
+          <div class="segmented" role="group" aria-label="Calendar view">
+            <button data-view="timeGridDay">Day</button>
+            <button data-view="timeGridWeek">Week</button>
+            <button data-view="dayGridMonth" class="is-active">Month</button>
+            <button data-view="year">Year</button>
+            <button data-view="listWeek">Agenda</button>
+          </div>
+          <button id="importBtn" class="add-btn ghost" aria-label="Bring my calendar in" title="Bring my calendar in"><svg class="ico"><use href="#i-calplus"/></svg></button>
+          <button id="addBtn" class="add-btn" aria-label="Add a task"><svg class="ico"><use href="#i-plus"/></svg></button>
+        </div>
+      </header>
+
+      <div id="ticker" aria-label="Day strip"></div>
+
+      <div id="checkinCard" class="checkin-card">
+        <div class="checkin-text">
+          <strong id="checkinQ">How are you feeling today?</strong>
+          <span id="checkinSub">The day adapts.</span>
+        </div>
+        <div class="level-row" id="levelRow">
+          <button class="level-btn level-low" data-level="low"><span class="level-dot"></span><span class="level-name" data-level-name="low">Low</span></button>
+          <button class="level-btn level-steady" data-level="steady"><span class="level-dot"></span><span class="level-name" data-level-name="steady">Steady</span></button>
+          <button class="level-btn level-full" data-level="full"><span class="level-dot"></span><span class="level-name" data-level-name="full">Full</span></button>
+        </div>
+      </div>
+
+      <div id="upNext" class="up-next" hidden></div>
+
+      <div id="calendarWrap">
+        <div id="calendar"></div>
+        <div id="yearView" hidden></div>
+      </div>
+
+      <div id="dayList" class="day-list"></div>
+    </section>
+
+    <!-- CAPTURE PANEL -->
+    <section class="panel" id="panel-capture">
+      <header class="topbar"><h2>Talk to it</h2></header>
+      <div class="capture-box">
+        <textarea id="dumpText" rows="7" placeholder="Try: call the dentist tomorrow at 3pm, and then clean the kitchen. Pay the rent on friday!!! Water the plants every weekday."></textarea>
+        <div class="capture-actions">
+          <button id="voiceBtn" class="soft-btn"><svg class="ico"><use href="#i-mic"/></svg><span>Speak</span></button>
+          <label class="soft-btn file-btn"><svg class="ico"><use href="#i-file"/></svg><span>Journal file</span><input type="file" id="journalFile" accept=".txt,.md,.csv" hidden></label>
+          <label class="soft-btn file-btn"><svg class="ico"><use href="#i-cam"/></svg><span>Photo of notes</span><input type="file" id="photoFile" accept="image/*" hidden></label>
+          <button id="parseBtn" class="primary-btn">Make my list</button>
+        </div>
+        <p id="captureMsg" class="hint" role="status"></p>
+      </div>
+      <div id="draftArea" hidden>
+        <h3>Here is what I made from that. Fix any of it.</h3>
+        <div id="draftList"></div>
+        <div class="draft-actions">
+          <button id="draftAddAll" class="primary-btn">Add all to my calendar</button>
+          <button id="draftClear" class="soft-btn">Start again</button>
+        </div>
+        <details class="original-keep"><summary>Keep the original words</summary><pre id="originalText"></pre></details>
+      </div>
+    </section>
+
+    <!-- TO DO PANEL -->
+    <section class="panel" id="panel-todo">
+      <header class="topbar"><h2>To do</h2><button id="todoCalAll" class="soft-btn"><svg class="ico"><use href="#i-calplus"/></svg><span>All to calendar</span></button></header>
+      <div class="todo-add">
+        <input id="todoInput" type="text" placeholder="Write it, fast" autocomplete="off" aria-label="New to-do">
+        <button id="todoAddBtn" class="primary-btn icon-only" aria-label="Add to-do"><svg class="ico"><use href="#i-plus"/></svg></button>
+        <button id="todoVoiceBtn" class="soft-btn"><svg class="ico"><use href="#i-mic"/></svg><span>Speak</span></button>
+        <label class="soft-btn file-btn"><svg class="ico"><use href="#i-cam"/></svg><span>Photo</span><input type="file" id="todoPhoto" accept="image/*" hidden></label>
+      </div>
+      <p id="todoMsg" class="hint" role="status"></p>
+      <div id="todoDraftArea" hidden>
+        <h3>From your photo. Tick the keepers.</h3>
+        <div id="todoDraftList"></div>
+        <div class="draft-actions">
+          <button id="todoDraftAdd" class="primary-btn">Add these</button>
+          <button id="todoDraftClear" class="soft-btn">Start again</button>
+        </div>
+      </div>
+      <div id="todoList"></div>
+      <button id="todoClearDone" class="text-btn" hidden>Clear done</button>
+    </section>
+
+    <!-- HABITS PANEL -->
+    <section class="panel" id="panel-habits">
+      <header class="topbar"><h2>Habits</h2></header>
+      <div id="habitList"></div>
+      <div class="habit-add">
+        <input id="habitName" type="text" placeholder="New habit" autocomplete="off" aria-label="New habit name">
+        <div id="habitIcons" class="icon-picker" role="radiogroup" aria-label="Pick an icon"></div>
+        <button id="habitAddBtn" class="primary-btn">Add habit</button>
+      </div>
+    </section>
+
+    <!-- PROGRESS PANEL -->
+    <section class="panel" id="panel-progress">
+      <header class="topbar"><h2>Progress</h2></header>
+      <div id="progressSummary" class="progress-summary"></div>
+      <div class="board">
+        <div class="board-col" data-status="todo"><h3>Next</h3><div class="board-list" id="col-todo"></div></div>
+        <div class="board-col" data-status="doing"><h3>Doing</h3><div class="board-list" id="col-doing"></div></div>
+        <div class="board-col" data-status="done"><h3>Done</h3><div class="board-list" id="col-done"></div></div>
+      </div>
+    </section>
+
+    <!-- SETTINGS PANEL -->
+    <section class="panel" id="panel-settings">
+      <header class="topbar"><h2>Settings</h2></header>
+      <div class="settings-group">
+        <h3>How it looks</h3>
+        <div class="swatches" role="group" aria-label="Colour theme">
+          <button class="swatch" data-theme-set="white"><span class="sw-dot" style="background:#ffffff;border:1px solid var(--hair)"></span>White</button>
+          <button class="swatch" data-theme-set="dark"><span class="sw-dot" style="background:#1c1c1e"></span>Black</button>
+          <button class="swatch" data-theme-set="brand"><span class="sw-dot" style="background:#8b99e4"></span>Brand</button>
+          <button class="swatch" data-theme-set="blush"><span class="sw-dot" style="background:#f7c8d8"></span>Blush</button>
+          <button class="swatch" data-theme-set="sky"><span class="sw-dot" style="background:#a9cdf7"></span>Sky</button>
+          <button class="swatch" data-theme-set="mint"><span class="sw-dot" style="background:#a9dcc0"></span>Mint</button>
+          <button class="swatch" data-theme-set="lavender"><span class="sw-dot" style="background:#c9bdf2"></span>Lavender</button>
+          <button class="swatch" id="photoApply" hidden><span class="sw-dot" id="photoDot"></span>Your photo</button>
+        </div>
+        <div class="row bg-photo-row">
+          <button type="button" class="soft-btn" id="bgPhotoBtn">Upload your own photo</button>
+          <input type="file" id="bgPhotoFile" accept="image/*" hidden>
+          <button type="button" class="mini-btn" id="photoRemove" hidden>Remove photo</button>
+          <span class="hint">A soft veil keeps every word readable over a photo.</span>
+        </div>
+        <label class="row check"><input type="checkbox" id="cuteToggle"> Cute mode</label>
+        <label class="row check"><input type="checkbox" id="sbToggle"> Menu open <span class="hint">The Pace mark brings it back.</span></label>
+      </div>
+      <div class="settings-group">
+        <h3>Morning check-in</h3>
+        <label class="row">Ask me at <input type="time" id="checkinTime" value="08:00"></label>
+        <label class="row">Low day is called <input type="text" id="nameLow" value="Bad" maxlength="14"></label>
+        <label class="row">Steady day is called <input type="text" id="nameSteady" value="Ok" maxlength="14"></label>
+        <label class="row">Full day is called <input type="text" id="nameFull" value="Good" maxlength="14"></label>
+      </div>
+      <div class="settings-group">
+        <h3>Notifications</h3>
+        <p class="hint" id="notifStatus">Notifications are off.</p>
+        <label class="row check"><input type="checkbox" id="nCheckin"> Morning check-in reminder</label>
+        <label class="row check"><input type="checkbox" id="nStart"> Start nudge before each timed task</label>
+        <label class="row">Nudge lead-in (minutes) <input type="number" id="nSetup" value="5" min="0" max="60"></label>
+        <label class="row check"><input type="checkbox" id="nDigest"> A gentle round-up of what is left</label>
+        <label class="row">Round-up times <input type="text" id="nDigestTimes" value="12:30, 16:30" size="14"></label>
+        <label class="row check"><input type="checkbox" id="nDone"> End of day done note (only what got done)</label>
+        <label class="row">Done note at <input type="time" id="nDoneTime" value="20:00"></label>
+        <div class="draft-actions">
+          <button id="notifEnable" class="primary-btn">Turn on notifications</button>
+          <button id="notifTest" class="soft-btn">Send a test</button>
+          <button id="notifPause" class="soft-btn">Pause all for today</button>
+        </div>
+        <p class="hint">Reminders fire while the app is open.</p>
+      </div>
+      <div class="settings-group">
+        <h3>Your tasks</h3>
+        <div class="draft-actions">
+          <button id="clearSamples" class="soft-btn">Remove the sample tasks</button>
+          <button id="guideAgain" class="soft-btn">Setup guide</button>
+          <button id="importOpen2" class="soft-btn">Bring my calendar in</button>
+        </div>
+        <p class="hint">On this device only.</p>
+      </div>
+      <div class="settings-group" id="accountGroup" hidden>
+        <h3>Account</h3>
+        <p class="hint" id="accountLine">You are using Pace on this device only.</p>
+        <div class="draft-actions">
+          <button id="accountOpen" class="primary-btn">Sign in</button>
+          <button id="accountOut" class="soft-btn" hidden>Sign out</button>
+          <button id="accountDownload" class="soft-btn">Download my data</button>
+        </div>
+        <div class="draft-actions">
+          <button id="accountBring" class="soft-btn" hidden>Bring this device's guest things into my account</button>
+          <button id="accountDelete" class="mini-btn" hidden>Delete my account</button>
+          <button id="accountUncache" class="mini-btn" hidden>Remove my cached data from this device</button>
+        </div>
+        <p class="hint" id="accountNote"></p>
+      </div>
+      <div class="settings-group">
+        <h3>Help + privacy</h3>
+        <div class="settings-links">
+          <a class="soft-btn" href="support.html"><svg class="ico"><use href="#i-chat"/></svg><span>Support</span></a>
+          <a class="soft-btn" href="privacy.html"><svg class="ico"><use href="#i-file"/></svg><span>Privacy</span></a>
+        </div>
+      </div>
+      <div class="settings-group brand-foot">
+        <svg class="brand-mark" aria-hidden="true"><use href="#i-logo"/></svg>
+        <div><strong>Pace Calendar</strong><span>Your day, at your pace.</span></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- QUICK ADD -->
+<div id="addSheet" class="sheet" hidden>
+  <div class="sheet-card">
+    <h3>Add a task</h3>
+    <label class="field">
+      <input type="text" id="quickText" placeholder="e.g. Ring the plumber tomorrow at 9am for 30 minutes" aria-label="Say it in one sentence">
+    </label>
+    <div id="quickPreview" class="quick-preview" hidden></div>
+    <details class="details-fallback"><summary>Or fill in the details</summary>
+      <label class="field">Title <input type="text" id="fTitle"></label>
+      <div class="field-row">
+        <label class="field">Date <input type="date" id="fDate"></label>
+        <label class="field">Time <input type="time" id="fTime"></label>
+        <label class="field">Minutes <input type="number" id="fDur" value="25" min="5" step="5"></label>
+      </div>
+      <label class="field">Smallest version (for low days) <input type="text" id="fMin" placeholder="e.g. Just ring and rebook"></label>
+      <label class="field">Biggest version (for full days) <input type="text" id="fFull" placeholder="e.g. The whole deep clean"></label>
+      <label class="row check"><input type="checkbox" id="fEssential"> This one must not slip</label>
+    </details>
+    <div class="sheet-actions">
+      <button id="addCancel" class="soft-btn">Cancel</button>
+      <button id="addSave" class="primary-btn">Add task</button>
+    </div>
+  </div>
+</div>
+
+<!-- TASK DETAIL -->
+<div id="taskSheet" class="sheet" hidden>
+  <div class="sheet-card">
+    <h3 id="dTitle">Task</h3>
+    <p class="hint" id="dMeta"></p>
+    <div id="dSteps"></div>
+    <button id="dBreak" class="soft-btn">Break this into small steps</button>
+    <label class="field">Smallest version (low days) <input type="text" id="dMin"></label>
+    <label class="field">Biggest version (full days) <input type="text" id="dFull"></label>
+    <div class="field-row">
+      <label class="field">Date <input type="date" id="dDate"></label>
+      <label class="field">Time <input type="time" id="dTime"></label>
+      <label class="field">Minutes <input type="number" id="dDur" min="5" step="5"></label>
+    </div>
+    <label class="row check"><input type="checkbox" id="dEssential"> This one must not slip</label>
+    <details class="original-keep" id="dOriginalWrap" hidden><summary>The words this came from</summary><pre id="dOriginal"></pre></details>
+    <div class="sheet-actions wrap">
+      <button id="dDone" class="primary-btn"><svg class="ico"><use href="#i-check"/></svg>Done</button>
+      <button id="dDoing" class="soft-btn"><svg class="ico"><use href="#i-play"/></svg>Doing</button>
+      <button id="dNotToday" class="soft-btn"><svg class="ico"><use href="#i-h-moon"/></svg>Not today</button>
+      <button id="dDelete" class="soft-btn danger"><svg class="ico"><use href="#i-trash"/></svg>Delete</button>
+      <button id="dClose" class="soft-btn"><svg class="ico"><use href="#i-x"/></svg>Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETUP GUIDE (Skip the Ferry; Lab spec GUIDE-MASCOTS-001) -->
+<div id="guideSheet" class="sheet" hidden>
+  <div class="sheet-card guide-card">
+    <button id="guideClose" class="icon-btn guide-x" aria-label="Close guide"><svg class="ico"><use href="#i-x"/></svg></button>
+    <div id="guideArt" aria-hidden="true"></div>
+    <p id="guideBubble" class="guide-bubble"></p>
+    <div id="guideExtra"></div>
+    <div class="guide-dots" id="guideDots" aria-hidden="true"></div>
+    <div class="sheet-actions">
+      <button id="guideSkip" class="soft-btn">Skip</button>
+      <button id="guideImport" class="soft-btn" hidden>Bring my old calendar in</button>
+      <button id="guideNext" class="primary-btn">Next</button>
+    </div>
+  </div>
+</div>
+
+<!-- BRING MY CALENDAR IN (shared module: calendar-import.js + IMPORT-DESIGN.md) -->
+<div id="importSheet" class="sheet" hidden>
+  <div class="sheet-card">
+    <h3>Bring my calendar in</h3>
+    <p class="hint">Read-only — this copies your events into Pace Calendar. Nothing in your old calendar changes, and importing again never doubles anything.</p>
+    <div class="import-sources" role="group" aria-label="Where is your calendar?">
+      <button class="soft-btn import-src is-active" data-src="google">Google Calendar</button>
+      <button class="soft-btn import-src" data-src="apple">Apple / iCloud</button>
+      <button class="soft-btn import-src" data-src="outlook">Outlook</button>
+      <button class="soft-btn import-src" data-src="file">A calendar file</button>
+    </div>
+    <p class="hint" id="importGuide">In Google Calendar: Settings → your calendar → “Secret address in iCal format”. Copy it, paste it below.</p>
+    <label class="row">Paste the calendar link <input type="url" id="importUrl" placeholder="https://… .ics" autocomplete="off"></label>
+    <div class="draft-actions">
+      <button id="importGo" class="primary-btn">Bring it in</button>
+      <button id="importFileBtn" class="soft-btn">Choose a file instead</button>
+      <input type="file" id="importFile" accept=".ics,text/calendar" hidden>
+    </div>
+    <p class="hint" id="importResult" role="status"></p>
+    <div class="sheet-actions">
+      <button id="importClose" class="soft-btn">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- WELCOME -->
+<div id="welcome" class="sheet" hidden>
+  <div class="sheet-card">
+    <h3>Welcome to Pace Calendar</h3>
+    <p><strong>Your day, at your pace.</strong></p>
+    <p>The day shapes itself around you.</p>
+    <div class="sheet-actions">
+      <button id="welcomeNotif" class="primary-btn">Turn on notifications</button>
+      <button id="welcomeSkip" class="soft-btn">Not now</button>
+    </div>
+  </div>
+</div>
+
+<!-- SIGN IN (accounts wave: Google · Apple · email + password) -->
+<div id="authSheet" class="sheet" hidden>
+  <div class="sheet-card">
+    <h3>Your account</h3>
+    <p class="hint">Sign in to keep your calendar safe across your devices. Pace still works fully without an account — this is a door, never a wall.</p>
+    <div class="draft-actions">
+      <button id="googleBtn" class="soft-btn">Continue with Google</button>
+      <button id="appleBtn" class="soft-btn" hidden>Continue with Apple</button>
+    </div>
+    <label class="row">Email <input type="email" id="authEmail" autocomplete="email" placeholder="you@example.com"></label>
+    <label class="row">Password <input type="password" id="authPass" autocomplete="current-password" placeholder="Your password"></label>
+    <p class="hint" id="authMsg" role="status"></p>
+    <div class="draft-actions">
+      <button id="authSignIn" class="primary-btn">Sign in</button>
+      <button id="authSignUp" class="soft-btn">Create account</button>
+      <button id="authReset" class="mini-btn">Forgot password</button>
+    </div>
+    <div class="sheet-actions">
+      <button id="authClose" class="soft-btn">Not now</button>
+    </div>
+  </div>
+</div>
+
+<!-- GUEST-UPLOAD DOOR (Security PC-1: explicit yes, offered once) -->
+<div id="potSheet" class="sheet" hidden>
+  <div class="sheet-card">
+    <h3>Bring your things into your account?</h3>
+    <p class="hint" id="potText">This device has a guest calendar on it.</p>
+    <div class="sheet-actions">
+      <button id="potNo" class="soft-btn">Start fresh</button>
+      <button id="potYes" class="primary-btn">Bring my things in</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE ACCOUNT (the user's own hand only) -->
+<div id="deleteSheet" class="sheet" hidden>
+  <div class="sheet-card">
+    <h3>Delete your account?</h3>
+    <p class="hint">This deletes your account and everything saved to it. Your guest calendar on this device is not touched. This cannot be undone.</p>
+    <label class="row">Password, to be sure <input type="password" id="deletePass" autocomplete="current-password"></label>
+    <p class="hint" id="deleteMsg" role="status"></p>
+    <div class="sheet-actions">
+      <button id="deleteCancel" class="soft-btn">Keep my account</button>
+      <button id="deleteGo" class="primary-btn">Delete my account</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="fullcalendar.js"></script>
+<script src="logic.js"></script>
+<script src="vendor/tesseract/tesseract.min.js"></script>
+<script src="vendor/ical/ical.min.js"></script>
+<script src="calendar-import.js"></script>
+<script src="firebase-config.js"></script>
+<script src="firebase.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
