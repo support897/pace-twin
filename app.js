@@ -229,9 +229,9 @@ function applySidebar() {
   if (calendar) calendar.updateSize();
 }
 document.querySelectorAll(".swatch[data-theme-set]").forEach(function (b) {
-  b.addEventListener("click", function () { state.settings.appearance.theme = b.getAttribute("data-theme-set"); state.settings.appearance.bgChoice = "theme"; save(); applyAppearance(); });
+  b.addEventListener("click", function () { var t = b.getAttribute("data-theme-set"); state.settings.appearance.theme = t; state.settings.appearance.bgChoice = "theme"; save(); applyAppearance(); if (t !== "white" && t !== "dark") maybePlus("look"); });
 });
-$("cuteToggle").addEventListener("change", function () { state.settings.appearance.cute = $("cuteToggle").checked; save(); applyAppearance(); });
+$("cuteToggle").addEventListener("change", function () { state.settings.appearance.cute = $("cuteToggle").checked; save(); applyAppearance(); if ($("cuteToggle").checked) maybePlus("cute"); });
 /* Law E — the user's own photo as the background. The photo is user
    data: picking another look never deletes it; only Remove does,
    and Remove carries Undo (Law B2). A soft veil + an ink set chosen
@@ -591,6 +591,7 @@ document.querySelectorAll(".side-item").forEach(function (b) {
     b.classList.add("is-active");
     $("panel-" + b.getAttribute("data-panel")).classList.add("is-active");
     if (b.getAttribute("data-panel") === "progress") renderProgress();
+    if (b.getAttribute("data-panel") === "capture") maybePlus("talk");
     // Phone + the Muse-app shape: choosing an area shows it —
     // the menu gives the screen back (the sliver tap and the
     // close button do the same when no choice is made).
@@ -1325,7 +1326,7 @@ function showGuide(step) {
       return '<button class="g-swatch" data-g-theme="' + t + '" style="background:' + THEME_COLORS[t] + '" aria-label="' + t + ' theme"></button>';
     }).join("") + "</div>";
     ex.querySelectorAll("[data-g-theme]").forEach(function (b) {
-      b.addEventListener("click", function () { state.settings.appearance.theme = b.getAttribute("data-g-theme"); state.settings.appearance.bgChoice = "theme"; save(); applyAppearance(); });
+      b.addEventListener("click", function () { var t = b.getAttribute("data-g-theme"); state.settings.appearance.theme = t; state.settings.appearance.bgChoice = "theme"; save(); applyAppearance(); if (t !== "white" && t !== "dark") maybePlus("look"); });
     });
   } else ex.innerHTML = "";
   $("guideSheet").hidden = false;
@@ -1370,6 +1371,28 @@ $("guideNext").addEventListener("click", function () {
   else showGuide(guideStep + 1);
 });
 $("guideAgain").addEventListener("click", function () { TOUR = []; buildTour(); showGuide(0); });
+
+/* ---------- the upgrade moment ---------- */
+/* Fires ONLY on a paid-edge tap (a Plus look, Cute mode,
+   Talk to it) — never on open, never twice for the same
+   edge in one visit. It invites to Plans; it never charges
+   and never locks: the tapped thing works exactly as today,
+   popup or no popup. (Pace has no repeat picker — repeats
+   arrive through Talk to it, already an edge, and through
+   import, a completed flow with no wanting-moment.) */
+var plusShown = {};
+function maybePlus(edge) {
+  if (DEMO_SESSION || plusShown[edge]) return;
+  plusShown[edge] = 1;
+  $("plusArt").innerHTML = skipSvg("welcome");
+  $("plusSheet").hidden = false;
+}
+function closePlus() { $("plusSheet").hidden = true; }
+$("plusClose").addEventListener("click", closePlus);
+$("plusNotNow").addEventListener("click", closePlus);
+$("plusPlans").addEventListener("click", function () { closePlus(); $("plansSheet").hidden = false; });
+$("plansOpen").addEventListener("click", function () { $("plansSheet").hidden = false; });
+$("plansClose").addEventListener("click", function () { $("plansSheet").hidden = true; });
 
 /* ---------- bring my calendar in (shared module: IMPORT-DESIGN.md) ---------- */
 var DEMO_SESSION = /[?&]demo=1\b/.test(location.search) || !!(state.settings && state.settings.demo);
