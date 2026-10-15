@@ -3,6 +3,7 @@
    failed or missed. Parked means parked, never dropped. */
 (function (root) {
 "use strict";
+var tr = window.t; /* the language layer (i18n.js) */
 
 function pad(n) { return (n < 10 ? "0" : "") + n; }
 function toKey(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
@@ -60,9 +61,9 @@ function decompose(title, durationMin, force) {
   var short = String(title).replace(/\s+/g, " ").trim();
   if (short.length > 42) short = short.slice(0, 42) + "…";
   return [
-    { text: "Get out what you need for: " + short, done: false },
-    { text: "Do the first small part for 10 minutes", done: false },
-    { text: "Put things away, then write the next step", done: false }
+    { text: tr("Get out what you need for: {title}", { title: short }), done: false },
+    { text: tr("Do the first small part for 10 minutes"), done: false },
+    { text: tr("Put things away, then write the next step"), done: false }
   ];
 }
 
@@ -212,9 +213,9 @@ function nextStepText(task) {
 }
 
 function digestText(visible) {
-  if (!visible.length) return "Nothing left showing today. The rest is parked, safe.";
+  if (!visible.length) return tr("Nothing left showing today. The rest is parked, safe.");
   var quickest = visible.slice().sort(function (a, b) { return a.durationMin - b.durationMin; })[0];
-  return visible.length + (visible.length === 1 ? " small thing" : " small things") + " left today. Quickest: " + quickest.title + " (" + quickest.durationMin + " min).";
+  return tr(visible.length === 1 ? "{n} small thing left today. Quickest: {title} ({min} min)." : "{n} small things left today. Quickest: {title} ({min} min).", { n: visible.length, title: quickest.title, min: quickest.durationMin });
 }
 
 /* The habit icons a user can pick from (keys into the app's SVG sprite). */
