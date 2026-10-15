@@ -1330,7 +1330,19 @@ function showGuide(step) {
   } else ex.innerHTML = "";
   $("guideSheet").hidden = false;
 }
+/* The name re-ask bookkeeping (HQ ruling): a name step left
+   unanswered earns ONE gentle re-offer on the NEXT visit —
+   never the same session, never a third time. "Visit" is a
+   page load: BOOT_T stamps this load, and a skip recorded
+   under an earlier stamp is what unlocks the re-offer. */
+var BOOT_T = Date.now();
+function noteNameSkip() {
+  if (!tourNeedsName()) return;
+  if (!TOUR.some(function (s) { return s.kind === "name"; })) return;
+  try { localStorage.setItem("pace-name-skip", (ACTIVE_UID || "") + ":" + BOOT_T); } catch (e) {}
+}
 function closeGuide() {
+  noteNameSkip();
   $("guideSheet").hidden = true;
   $("guideSheet").removeAttribute("data-dock");
   applySidebar();
@@ -1522,17 +1534,24 @@ function reconcileAccount() {
 }
 /* Door-first joining, v4: after the door the user is inside
    the app and Skip's TOUR asks the name as its first stop.
-   A fresh account's tour includes it automatically (the
-   guide hasn't run for this state). An account whose tour
-   already ran but still has no name gets the name stop on
-   its own — once per account (the stamp is per ACCOUNT,
-   not per device, so a second person joining on the same
-   phone is still asked). The pot door follows either way. */
+   Left unanswered, the name earns exactly ONE gentle
+   re-offer on the next visit (HQ's re-ask ruling — see
+   maybeJoinDoor + noteNameSkip), then never again; the
+   name also lives in Settings forever. The pot door
+   follows either way. */
 function maybeJoinDoor() {
   if (!ACTIVE_UID || state.settings.profileName) { maybePotDoor(); return; }
   if (!state.settings.guideDone) { maybePotDoor(); return; } // the coming tour asks it
-  try { if (localStorage.getItem("pace-name-asked") === ACTIVE_UID) { maybePotDoor(); return; } } catch (e) {}
-  try { localStorage.setItem("pace-name-asked", ACTIVE_UID); } catch (e) {}
+  // THE GENTLE RE-OFFER (HQ ruling): once, on a later visit
+  // than the skip — never the same session, never again
+  // after. An account never asked at all (its tour predates
+  // the name step) gets this as its first ask.
+  try {
+    if (localStorage.getItem("pace-name-reoffered") === ACTIVE_UID) { maybePotDoor(); return; }
+    var sk = (localStorage.getItem("pace-name-skip") || "").split(":");
+    if (sk[0] === ACTIVE_UID && !(Number(sk[1]) < BOOT_T)) { maybePotDoor(); return; } // skipped this very visit
+    localStorage.setItem("pace-name-reoffered", ACTIVE_UID);
+  } catch (e) { maybePotDoor(); return; }
   TOUR = [{ kind: "name", pose: "welcome", bubble: "Ahoy! I'm Skip. What's your name?", next: "Done ✓", last: true }];
   showGuide(0);
   maybePotDoor();
