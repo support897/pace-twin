@@ -362,7 +362,7 @@ try {
     <div id="guideExtra"></div>
     <div class="guide-dots" id="guideDots" aria-hidden="true"></div>
     <div class="sheet-actions">
-      <button id="guideSkip" class="soft-btn">Skip</button>
+      <button id="guideSkip" class="soft-btn">Skip tour</button>
       <button id="guideImport" class="soft-btn" hidden>Bring my old calendar in</button>
       <button id="guideNext" class="primary-btn">Next</button>
     </div>
@@ -408,36 +408,50 @@ try {
 </div>
 
 <!-- SIGN IN (accounts wave: Google · Apple · email + password) -->
-<div id="authSheet" class="sheet" hidden>
-  <div class="sheet-card">
-    <div class="door-mark"><svg class="brand-mark" aria-hidden="true"><use href="#i-logo"/></svg><span class="door-name">Pace Calendar</span></div>
-    <div class="draft-actions">
-      <button id="googleBtn" class="soft-btn">Continue with Google</button>
-      <button id="appleBtn" class="soft-btn" hidden>Continue with Apple</button>
+<!-- THE DOOR (v4 shape): a full first page — only the
+     sign-up, big and in the middle. Step 2 (password)
+     lives on the same page. The name is asked by Skip's
+     tour, inside the app — there is no name form here. -->
+<div id="authSheet" class="sheet door-page" hidden>
+  <div class="door-inner">
+    <!-- STEP 1 -->
+    <div id="doorStep1">
+      <div class="door-hero">
+        <span class="door-tile"><svg class="brand-mark" aria-hidden="true"><use href="#i-logo"/></svg></span>
+        <span class="door-title">Pace Calendar</span>
+        <span class="door-sub">Sign in or make your account</span>
+      </div>
+      <div class="door-social">
+        <button id="googleBtn" class="door-social-btn" aria-label="Continue with Google"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.3c0-.9-.1-1.5-.3-2.2H12v4.3h6.5c-.1 1.1-.8 2.7-2.4 3.8l3.7 2.9c2.3-2.1 3.7-5.2 3.7-8.8z"/><path fill="#34A853" d="M12 24c3.2 0 5.9-1.1 7.9-2.9l-3.7-2.9c-1 .7-2.4 1.2-4.2 1.2-3.2 0-5.9-2.1-6.8-5l-3.9 3C3.3 21.3 7.3 24 12 24z"/><path fill="#FBBC05" d="M5.2 14.4c-.2-.7-.4-1.5-.4-2.4s.1-1.7.4-2.4l-3.9-3C.5 8.2 0 10 0 12s.5 3.8 1.3 5.4l3.9-3z"/><path fill="#EA4335" d="M12 4.7c1.8 0 3 .8 3.7 1.4l3.3-3.2C17.9 1.1 15.2 0 12 0 7.3 0 3.3 2.7 1.3 6.6l3.9 3c.9-2.8 3.6-4.9 6.8-4.9z"/></svg></button>
+        <button id="appleBtn" class="door-social-btn" aria-label="Continue with Apple" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.05 12.54c0-2.4 1.96-3.55 2.05-3.6-1.12-1.64-2.86-1.86-3.48-1.89-1.48-.15-2.89.87-3.64.87-.75 0-1.9-.85-3.13-.83-1.61.02-3.1.94-3.93 2.38-1.68 2.9-.43 7.2 1.2 9.56.8 1.15 1.75 2.45 3 2.4 1.2-.05 1.66-.78 3.12-.78s1.87.78 3.14.75c1.3-.02 2.12-1.17 2.91-2.33.92-1.34 1.3-2.64 1.32-2.7-.03-.01-2.54-.98-2.56-3.88zM14.65 5.4c.66-.8 1.1-1.91.98-3.02-.95.04-2.1.63-2.78 1.43-.61.71-1.14 1.84-.99 2.92 1.05.08 2.13-.53 2.79-1.33z"/></svg></button>
+      </div>
+      <div class="door-divider"><span>or with email</span></div>
+      <input type="email" id="authEmail" class="door-email" autocomplete="email" placeholder="you@example.com" aria-label="Email">
+      <p class="hint" id="authMsg1" role="status"></p>
+      <div class="door-arrow-row">
+        <button id="doorNext" class="door-arrow" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11h13.2l-5-5L13.6 4.6 21 12l-7.4 7.4L12.2 18l5-5H4z" fill="currentColor"/></svg></button>
+      </div>
+      <p class="door-note">Just looking? <button id="authClose" class="door-explore">Explore the app first</button></p>
+      <p class="door-note">password next — then you're inside, and the tour starts</p>
     </div>
-    <label class="field">Email <input type="email" id="authEmail" autocomplete="email" placeholder="you@example.com"></label>
-    <label class="field">Password <input type="password" id="authPass" autocomplete="current-password" placeholder="Your password"></label>
-    <p class="hint" id="authMsg" role="status"></p>
-    <div class="draft-actions">
-      <button id="authGo" class="primary-btn">Continue</button>
-      <button id="authReset" class="mini-btn">Forgot password</button>
-    </div>
-    <div class="sheet-actions">
-      <button id="authClose" class="soft-btn">Not now</button>
-    </div>
-  </div>
-</div>
-
-<!-- THE NAME (door-first joining): asked on the screen right
-     after the door — one question only, then into the app. -->
-<div id="nameSheet" class="sheet" hidden>
-  <div class="sheet-card">
-    <h3>One quick thing</h3>
-    <label class="field">What's your name? <input type="text" id="nameAsk" autocomplete="name" placeholder="Your name"></label>
-    <p class="hint" id="nameMsg" role="status"></p>
-    <div class="sheet-actions">
-      <button id="nameAskGo" class="primary-btn">That's me</button>
-      <button id="nameAskSkip" class="soft-btn">Not now</button>
+    <!-- STEP 2: the email (with Change), the password, one
+         button, the forgot line. -->
+    <div id="doorStep2" hidden>
+      <div class="door-topbar">
+        <button id="doorBack" class="door-back" aria-label="Back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11H6.8l5-5L10.4 4.6 3 12l7.4 7.4L11.8 18l-5-5H20z" fill="currentColor"/></svg></button>
+        <svg class="brand-mark" aria-hidden="true"><use href="#i-logo"/></svg>
+        <span class="door-topname">Pace Calendar</span>
+      </div>
+      <div class="door-email-pill"><span id="doorEmailEcho"></span><button id="doorChange" class="mini-btn">Change</button></div>
+      <label class="field">Choose your password <span class="pw-wrap"><input type="password" id="authPass" autocomplete="current-password" placeholder="Your password"><button type="button" id="pwEye" class="pw-eye" aria-label="Show password"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c5 0 9.3 3 11 7-1.7 4-6 7-11 7S2.7 16 1 12c1.7-4 6-7 11-7zm0 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" fill="currentColor"/></svg></button></span></label>
+      <p class="hint" id="authMsg" role="status"></p>
+      <div class="draft-actions">
+        <button id="authGo" class="primary-btn">Create my account</button>
+      </div>
+      <p class="door-note">Already have an account?<br>This signs you in instead.</p>
+      <div class="draft-actions">
+        <button id="authReset" class="mini-btn">Forgot password?</button>
+      </div>
     </div>
   </div>
 </div>
