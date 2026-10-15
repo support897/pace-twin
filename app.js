@@ -1402,8 +1402,9 @@ function scheduleSync() {
   if (syncTimer) clearTimeout(syncTimer);
   syncTimer = setTimeout(syncNow, 1200);
 }
+var DELETING = false;
 function syncNow() {
-  if (!ACTIVE_UID || !FB.configured || syncBusy) return;
+  if (!ACTIVE_UID || !FB.configured || syncBusy || DELETING) return;
   syncBusy = true;
   var payload = JSON.stringify(state);
   FB.fsSet(statePath(), { stateJson: payload, updatedAt: new Date().toISOString() })
@@ -1653,6 +1654,12 @@ function bindAccounts() {
     var pw = $("deletePass").value;
     var sess = FB.session();
     if (!sess) return;
+    // Disarm sync FIRST (Quality's held leg, diagnosed): a
+    // debounced save landing mid-sweep would resurrect the
+    // state doc after its delete — the sweep must be the
+    // only writer from here. A failed delete re-arms it.
+    DELETING = true;
+    if (syncTimer) { clearTimeout(syncTimer); syncTimer = null; }
     $("deleteMsg").textContent = "Checking it is you…";
     FB.emailSignIn(sess.email, pw).then(function () {
       $("deleteMsg").textContent = "Deleting…";
@@ -1670,7 +1677,7 @@ function bindAccounts() {
         try { localStorage.removeItem(storeKey()); localStorage.removeItem("pace-last-uid"); } catch (e) {}
         location.reload();
       })
-      .catch(function (e) { $("deleteMsg").textContent = e.message || "That did not work. Nothing was deleted."; });
+      .catch(function (e) { DELETING = false; $("deleteMsg").textContent = e.message || "That did not work. Nothing was deleted."; });
   });
   reconcileAccount();
 }
