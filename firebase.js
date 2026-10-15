@@ -55,6 +55,10 @@
       idToken: j.idToken, refreshToken: j.refreshToken,
       expiresAt: Date.now() + (parseInt(j.expiresIn, 10) || 3600) * 1000,
     };
+    // A federated door (Google) may carry the person's name —
+    // stash it the same way the sign-up form does, so the app
+    // can greet them by it once their state loads.
+    if (j.displayName) { try { localStorage.setItem("pace-pending-name", String(j.displayName).slice(0, 60)); } catch (e) {} }
     saveSession();
     return session;
   }
