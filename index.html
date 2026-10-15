@@ -78,24 +78,24 @@ try {
   <aside id="sidebar" aria-label="Menu">
     <div class="brand">
       <svg class="brand-mark" aria-hidden="true"><use href="#i-logo"/></svg>
-      <span class="brand-name">Pace Calendar</span>
+      <span class="brand-name" data-i18n>Pace Calendar</span>
       <button id="sbCollapse" class="icon-btn" aria-label="Hide the menu" title="Hide the menu"><svg class="ico"><use href="#i-chevl"/></svg></button>
     </div>
     <nav>
-      <div class="side-group">Plan</div>
+      <div class="side-group" data-i18n>Plan</div>
       <button class="side-item is-active" data-panel="calendar"><svg class="ico side-ico"><use href="#i-cal"/></svg><span class="side-label">Calendar</span></button>
       <button class="side-item" data-panel="progress"><svg class="ico side-ico"><use href="#i-chart"/></svg><span class="side-label">Progress</span></button>
-      <div class="side-group">Lists</div>
+      <div class="side-group" data-i18n>Lists</div>
       <button class="side-item" data-panel="todo"><svg class="ico side-ico"><use href="#i-todo"/></svg><span class="side-label">To do</span></button>
       <button class="side-item" data-panel="habits"><svg class="ico side-ico"><use href="#i-habits"/></svg><span class="side-label">Habits</span></button>
-      <div class="side-group">Add + app</div>
+      <div class="side-group" data-i18n>Add + app</div>
       <button class="side-item" data-panel="capture"><svg class="ico side-ico"><use href="#i-chat"/></svg><span class="side-label">Talk to it</span></button>
       <button class="side-item" data-panel="settings"><svg class="ico side-ico"><use href="#i-gear"/></svg><span class="side-label">Settings</span></button>
     </nav>
     <div class="side-foot">
       <div class="side-ring" title="Today, at your pace">
         <svg class="ring" viewBox="0 0 44 44" aria-hidden="true"><circle class="ring-bg" cx="22" cy="22" r="18"/><circle class="ring-fg" id="ringFg" cx="22" cy="22" r="18"/></svg>
-        <div class="ring-text"><strong id="ringPct">0%</strong><span>done today</span></div>
+        <div class="ring-text"><strong id="ringPct">0%</strong><span data-i18n>done today</span></div>
       </div>
       <div class="side-level" id="sideLevel" title="Today's level"></div>
     </div>
@@ -110,11 +110,11 @@ try {
         <button id="monthTitle" class="month-title" title="Back to today">October 2026</button>
         <div class="top-actions">
           <div class="segmented" role="group" aria-label="Calendar view">
-            <button data-view="timeGridDay">Day</button>
-            <button data-view="timeGridWeek">Week</button>
-            <button data-view="dayGridMonth" class="is-active">Month</button>
-            <button data-view="year">Year</button>
-            <button data-view="listWeek">Agenda</button>
+            <button data-view="timeGridDay" data-i18n>Day</button>
+            <button data-view="timeGridWeek" data-i18n>Week</button>
+            <button data-view="dayGridMonth" class="is-active" data-i18n>Month</button>
+            <button data-view="year" data-i18n>Year</button>
+            <button data-view="listWeek" data-i18n>Agenda</button>
           </div>
           <button id="importBtn" class="add-btn ghost" aria-label="Bring my calendar in" title="Bring my calendar in"><svg class="ico"><use href="#i-calplus"/></svg></button>
           <button id="addBtn" class="add-btn" aria-label="Add a task"><svg class="ico"><use href="#i-plus"/></svg></button>
@@ -125,13 +125,13 @@ try {
 
       <div id="checkinCard" class="checkin-card">
         <div class="checkin-text">
-          <strong id="checkinQ">How are you feeling today?</strong>
-          <span id="checkinSub">The day adapts.</span>
+          <strong id="checkinQ" data-i18n>How are you feeling today?</strong>
+          <span id="checkinSub" data-i18n>The day adapts.</span>
         </div>
         <div class="level-row" id="levelRow">
-          <button class="level-btn level-low" data-level="low"><span class="level-dot"></span><span class="level-name" data-level-name="low">Low</span></button>
-          <button class="level-btn level-steady" data-level="steady"><span class="level-dot"></span><span class="level-name" data-level-name="steady">Steady</span></button>
-          <button class="level-btn level-full" data-level="full"><span class="level-dot"></span><span class="level-name" data-level-name="full">Full</span></button>
+          <button class="level-btn level-low" data-level="low"><span class="level-dot"></span><span class="level-name" data-i18n data-level-name="low">Low</span></button>
+          <button class="level-btn level-steady" data-level="steady"><span class="level-dot"></span><span class="level-name" data-i18n data-level-name="steady">Steady</span></button>
+          <button class="level-btn level-full" data-level="full"><span class="level-dot"></span><span class="level-name" data-i18n data-level-name="full">Full</span></button>
         </div>
       </div>
 
@@ -147,156 +147,156 @@ try {
 
     <!-- CAPTURE PANEL -->
     <section class="panel" id="panel-capture">
-      <header class="topbar"><h2>Talk to it</h2></header>
+      <header class="topbar"><h2 data-i18n>Talk to it</h2></header>
       <div class="capture-box">
-        <textarea id="dumpText" rows="7" placeholder="Try: call the dentist tomorrow at 3pm, and then clean the kitchen. Pay the rent on friday!!! Water the plants every weekday."></textarea>
+        <textarea id="dumpText" data-i18n-ph rows="7" placeholder="Try: call the dentist tomorrow at 3pm, and then clean the kitchen. Pay the rent on friday!!! Water the plants every weekday."></textarea>
         <div class="capture-actions">
-          <button id="voiceBtn" class="soft-btn"><svg class="ico"><use href="#i-mic"/></svg><span>Speak</span></button>
-          <label class="soft-btn file-btn"><svg class="ico"><use href="#i-file"/></svg><span>Journal file</span><input type="file" id="journalFile" accept=".txt,.md,.csv" hidden></label>
-          <label class="soft-btn file-btn"><svg class="ico"><use href="#i-cam"/></svg><span>Photo of notes</span><input type="file" id="photoFile" accept="image/*" hidden></label>
-          <button id="parseBtn" class="primary-btn">Make my list</button>
+          <button id="voiceBtn" class="soft-btn" data-i18n><svg class="ico"><use href="#i-mic"/></svg><span>Speak</span></button>
+          <label class="soft-btn file-btn"><svg class="ico"><use href="#i-file"/></svg data-i18n><span>Journal file</span><input type="file" id="journalFile" accept=".txt,.md,.csv" hidden></label>
+          <label class="soft-btn file-btn"><svg class="ico"><use href="#i-cam"/></svg><span>Photo of notes</span data-i18n><input type="file" id="photoFile" accept="image/*" hidden></label>
+          <button id="parseBtn" class="primary-btn" data-i18n>Make my list</button>
         </div>
         <p id="captureMsg" class="hint" role="status"></p>
       </div>
       <div id="draftArea" hidden>
-        <h3>Here is what I made from that. Fix any of it.</h3>
+        <h3 data-i18n>Here is what I made from that. Fix any of it.</h3>
         <div id="draftList"></div>
         <div class="draft-actions">
-          <button id="draftAddAll" class="primary-btn">Add all to my calendar</button>
-          <button id="draftClear" class="soft-btn">Start again</button>
+          <button id="draftAddAll" class="primary-btn" data-i18n>Add all to my calendar</button>
+          <button id="draftClear" class="soft-btn" data-i18n>Start again</button>
         </div>
-        <details class="original-keep"><summary>Keep the original words</summary><pre id="originalText"></pre></details>
+        <details class="original-keep"><summary data-i18n>Keep the original words</summary><pre id="originalText"></pre></details>
       </div>
     </section>
 
     <!-- TO DO PANEL -->
     <section class="panel" id="panel-todo">
-      <header class="topbar"><h2>To do</h2><button id="todoCalAll" class="soft-btn"><svg class="ico"><use href="#i-calplus"/></svg><span>All to calendar</span></button></header>
+      <header class="topbar"><h2 data-i18n>To do</h2><button id="todoCalAll" class="soft-btn"><svg class="ico"><use href="#i-calplus"/></svg><span>All to calendar</span></button></header>
       <div class="todo-add">
-        <input id="todoInput" type="text" placeholder="Write it, fast" autocomplete="off" aria-label="New to-do">
+        <input id="todoInput" data-i18n-ph type="text" placeholder="Write it, fast" autocomplete="off" aria-label="New to-do">
         <button id="todoAddBtn" class="primary-btn icon-only" aria-label="Add to-do"><svg class="ico"><use href="#i-plus"/></svg></button>
-        <button id="todoVoiceBtn" class="soft-btn"><svg class="ico"><use href="#i-mic"/></svg><span>Speak</span></button>
-        <label class="soft-btn file-btn"><svg class="ico"><use href="#i-cam"/></svg><span>Photo</span><input type="file" id="todoPhoto" accept="image/*" hidden></label>
+        <button id="todoVoiceBtn" class="soft-btn" data-i18n><svg class="ico"><use href="#i-mic"/></svg><span>Speak</span></button>
+        <label class="soft-btn file-btn" data-i18n><svg class="ico"><use href="#i-cam"/></svg><span>Photo</span><input type="file" id="todoPhoto" accept="image/*" hidden></label>
       </div>
       <p id="todoMsg" class="hint" role="status"></p>
       <div id="todoDraftArea" hidden>
-        <h3>From your photo. Tick the keepers.</h3>
+        <h3 data-i18n>From your photo. Tick the keepers.</h3>
         <div id="todoDraftList"></div>
         <div class="draft-actions">
-          <button id="todoDraftAdd" class="primary-btn">Add these</button>
-          <button id="todoDraftClear" class="soft-btn">Start again</button>
+          <button id="todoDraftAdd" class="primary-btn" data-i18n>Add these</button>
+          <button id="todoDraftClear" class="soft-btn" data-i18n>Start again</button>
         </div>
       </div>
       <div id="todoList"></div>
-      <button id="todoClearDone" class="text-btn" hidden>Clear done</button>
+      <button id="todoClearDone" class="text-btn" hidden data-i18n>Clear done</button>
     </section>
 
     <!-- HABITS PANEL -->
     <section class="panel" id="panel-habits">
-      <header class="topbar"><h2>Habits</h2></header>
+      <header class="topbar"><h2 data-i18n>Habits</h2></header>
       <div id="habitList"></div>
       <div class="habit-add">
-        <input id="habitName" type="text" placeholder="New habit" autocomplete="off" aria-label="New habit name">
+        <input id="habitName" data-i18n-ph type="text" placeholder="New habit" autocomplete="off" aria-label="New habit name">
         <div id="habitIcons" class="icon-picker" role="radiogroup" aria-label="Pick an icon"></div>
-        <button id="habitAddBtn" class="primary-btn">Add habit</button>
+        <button id="habitAddBtn" class="primary-btn" data-i18n>Add habit</button>
       </div>
     </section>
 
     <!-- PROGRESS PANEL -->
     <section class="panel" id="panel-progress">
-      <header class="topbar"><h2>Progress</h2></header>
+      <header class="topbar"><h2 data-i18n>Progress</h2></header>
       <div id="progressSummary" class="progress-summary"></div>
       <div class="board">
-        <div class="board-col" data-status="todo"><h3>Next</h3><div class="board-list" id="col-todo"></div></div>
-        <div class="board-col" data-status="doing"><h3>Doing</h3><div class="board-list" id="col-doing"></div></div>
-        <div class="board-col" data-status="done"><h3>Done</h3><div class="board-list" id="col-done"></div></div>
+        <div class="board-col" data-status="todo"><h3 data-i18n>Next</h3><div class="board-list" id="col-todo"></div></div>
+        <div class="board-col" data-status="doing"><h3 data-i18n>Doing</h3><div class="board-list" id="col-doing"></div></div>
+        <div class="board-col" data-status="done"><h3 data-i18n>Done</h3><div class="board-list" id="col-done"></div></div>
       </div>
     </section>
 
     <!-- SETTINGS PANEL -->
     <section class="panel" id="panel-settings">
-      <header class="topbar"><h2>Settings</h2></header>
+      <header class="topbar"><h2 data-i18n>Settings</h2></header>
       <div class="settings-group">
-        <h3>How it looks</h3>
+        <h3 data-i18n>How it looks</h3>
         <div class="swatches" role="group" aria-label="Colour theme">
-          <button class="swatch" data-theme-set="white"><span class="sw-dot" style="background:#ffffff;border:1px solid var(--hair)"></span>White</button>
-          <button class="swatch" data-theme-set="dark"><span class="sw-dot" style="background:#1c1c1e"></span>Black</button>
-          <button class="swatch" data-theme-set="brand"><span class="sw-dot" style="background:#8b99e4"></span>Brand</button>
-          <button class="swatch" data-theme-set="blush"><span class="sw-dot" style="background:#f7c8d8"></span>Blush</button>
-          <button class="swatch" data-theme-set="sky"><span class="sw-dot" style="background:#a9cdf7"></span>Sky</button>
-          <button class="swatch" data-theme-set="mint"><span class="sw-dot" style="background:#a9dcc0"></span>Mint</button>
-          <button class="swatch" data-theme-set="lavender"><span class="sw-dot" style="background:#c9bdf2"></span>Lavender</button>
+          <button class="swatch" data-theme-set="white" data-i18n><span class="sw-dot" style="background:#ffffff;border:1px solid var(--hair)"></span>White</button>
+          <button class="swatch" data-theme-set="dark" data-i18n><span class="sw-dot" style="background:#1c1c1e"></span>Black</button>
+          <button class="swatch" data-theme-set="brand" data-i18n><span class="sw-dot" style="background:#8b99e4"></span>Brand</button>
+          <button class="swatch" data-theme-set="blush" data-i18n><span class="sw-dot" style="background:#f7c8d8"></span>Blush</button>
+          <button class="swatch" data-theme-set="sky" data-i18n><span class="sw-dot" style="background:#a9cdf7"></span>Sky</button>
+          <button class="swatch" data-theme-set="mint" data-i18n><span class="sw-dot" style="background:#a9dcc0"></span>Mint</button>
+          <button class="swatch" data-theme-set="lavender" data-i18n><span class="sw-dot" style="background:#c9bdf2"></span>Lavender</button>
           <button class="swatch" id="photoApply" hidden><span class="sw-dot" id="photoDot"></span>Your photo</button>
         </div>
         <div class="row bg-photo-row">
-          <button type="button" class="soft-btn" id="bgPhotoBtn">Upload your own photo</button>
+          <button type="button" class="soft-btn" id="bgPhotoBtn" data-i18n>Upload your own photo</button>
           <input type="file" id="bgPhotoFile" accept="image/*" hidden>
-          <button type="button" class="mini-btn" id="photoRemove" hidden>Remove photo</button>
-          <span class="hint">A soft veil keeps every word readable over a photo.</span>
+          <button type="button" class="mini-btn" id="photoRemove" hidden data-i18n>Remove photo</button>
+          <span class="hint" data-i18n>A soft veil keeps every word readable over a photo.</span>
         </div>
-        <label class="row check"><input type="checkbox" id="cuteToggle"> Cute mode</label>
-        <label class="row check"><input type="checkbox" id="sbToggle"> Menu open <span class="hint">The Pace mark brings it back.</span></label>
+        <label class="row check" data-i18n><input type="checkbox" id="cuteToggle"> Cute mode</label>
+        <label class="row check" data-i18n><input type="checkbox" id="sbToggle"> Menu open <span class="hint">The Pace mark brings it back.</span></label>
       </div>
       <div class="settings-group">
-        <h3>Morning check-in</h3>
-        <label class="row">Ask me at <input type="time" id="checkinTime" value="08:00"></label>
-        <label class="row">Low day is called <input type="text" id="nameLow" value="Bad" maxlength="14"></label>
-        <label class="row">Steady day is called <input type="text" id="nameSteady" value="Ok" maxlength="14"></label>
-        <label class="row">Full day is called <input type="text" id="nameFull" value="Great" maxlength="14"></label>
+        <h3 data-i18n>Morning check-in</h3>
+        <label class="row" data-i18n>Ask me at <input type="time" id="checkinTime" value="08:00"></label>
+        <label class="row" data-i18n>Low day is called <input type="text" id="nameLow" value="Bad" maxlength="14"></label>
+        <label class="row" data-i18n>Steady day is called <input type="text" id="nameSteady" value="Ok" maxlength="14"></label>
+        <label class="row" data-i18n>Full day is called <input type="text" id="nameFull" value="Great" maxlength="14"></label>
       </div>
       <div class="settings-group">
-        <h3>Notifications</h3>
-        <p class="hint" id="notifStatus">Notifications are off.</p>
-        <label class="row check"><input type="checkbox" id="nCheckin"> Morning check-in reminder</label>
-        <label class="row check"><input type="checkbox" id="nStart"> Start nudge before each timed task</label>
-        <label class="row">Nudge lead-in (minutes) <input type="number" id="nSetup" value="5" min="0" max="60"></label>
-        <label class="row check"><input type="checkbox" id="nDigest"> A gentle round-up of what is left</label>
-        <label class="row">Round-up times <input type="text" id="nDigestTimes" value="12:30, 16:30" size="14"></label>
-        <label class="row check"><input type="checkbox" id="nDone"> End of day done note (only what got done)</label>
-        <label class="row">Done note at <input type="time" id="nDoneTime" value="20:00"></label>
+        <h3 data-i18n>Notifications</h3>
+        <p class="hint" id="notifStatus" data-i18n>Notifications are off.</p>
+        <label class="row check" data-i18n><input type="checkbox" id="nCheckin"> Morning check-in reminder</label>
+        <label class="row check" data-i18n><input type="checkbox" id="nStart"> Start nudge before each timed task</label>
+        <label class="row" data-i18n>Nudge lead-in (minutes) <input type="number" id="nSetup" value="5" min="0" max="60"></label>
+        <label class="row check" data-i18n><input type="checkbox" id="nDigest"> A gentle round-up of what is left</label>
+        <label class="row" data-i18n>Round-up times <input type="text" id="nDigestTimes" value="12:30, 16:30" size="14"></label>
+        <label class="row check" data-i18n><input type="checkbox" id="nDone"> End of day done note (only what got done)</label>
+        <label class="row" data-i18n>Done note at <input type="time" id="nDoneTime" value="20:00"></label>
         <div class="draft-actions">
-          <button id="notifEnable" class="primary-btn">Turn on notifications</button>
-          <button id="notifTest" class="soft-btn">Send a test</button>
-          <button id="notifPause" class="soft-btn">Pause all for today</button>
+          <button id="notifEnable" class="primary-btn" data-i18n>Turn on notifications</button>
+          <button id="notifTest" class="soft-btn" data-i18n>Send a test</button>
+          <button id="notifPause" class="soft-btn" data-i18n>Pause all for today</button>
         </div>
-        <p class="hint">Reminders fire while the app is open.</p>
+        <p class="hint" data-i18n>Reminders fire while the app is open.</p>
       </div>
       <div class="settings-group">
-        <h3>Your tasks</h3>
+        <h3 data-i18n>Your tasks</h3>
         <div class="draft-actions">
-          <button id="clearSamples" class="soft-btn">Remove the sample tasks</button>
-          <button id="guideAgain" class="soft-btn">Setup guide</button>
-          <button id="importOpen2" class="soft-btn">Bring my calendar in</button>
-          <button id="plansOpen" class="soft-btn">Plans</button>
+          <button id="clearSamples" class="soft-btn" data-i18n>Remove the sample tasks</button>
+          <button id="guideAgain" class="soft-btn" data-i18n>Setup guide</button>
+          <button id="importOpen2" class="soft-btn" data-i18n>Bring my calendar in</button>
+          <button id="plansOpen" class="soft-btn" data-i18n>Plans</button>
         </div>
-        <p class="hint">On this device only.</p>
+        <p class="hint" data-i18n>On this device only.</p>
       </div>
       <div class="settings-group" id="accountGroup" hidden>
-        <h3>Account</h3>
-        <p class="hint" id="accountLine">You are using Pace on this device only.</p>
-        <label class="row" id="profileNameRow" hidden>Your name <input type="text" id="profileName" autocomplete="name" placeholder="How should we address you?"></label>
+        <h3 data-i18n>Account</h3>
+        <p class="hint" id="accountLine" data-i18n>You are using Pace on this device only.</p>
+        <label class="row" id="profileNameRow" hidden data-i18n>Your name <input type="text" id="profileName" data-i18n-ph autocomplete="name" placeholder="How should we address you?"></label>
         <div class="draft-actions">
-          <button id="accountOpen" class="primary-btn">Sign in</button>
-          <button id="accountOut" class="soft-btn" hidden>Sign out</button>
-          <button id="accountDownload" class="soft-btn">Download my data</button>
+          <button id="accountOpen" class="primary-btn" data-i18n>Sign in</button>
+          <button id="accountOut" class="soft-btn" hidden data-i18n>Sign out</button>
+          <button id="accountDownload" class="soft-btn" data-i18n>Download my data</button>
         </div>
         <div class="draft-actions">
-          <button id="accountBring" class="soft-btn" hidden>Bring this device's guest things into my account</button>
-          <button id="accountDelete" class="mini-btn" hidden>Delete my account</button>
-          <button id="accountUncache" class="mini-btn" hidden>Remove my cached data from this device</button>
+          <button id="accountBring" class="soft-btn" hidden data-i18n>Bring this device's guest things into my account</button>
+          <button id="accountDelete" class="mini-btn" hidden data-i18n>Delete my account</button>
+          <button id="accountUncache" class="mini-btn" hidden data-i18n>Remove my cached data from this device</button>
         </div>
         <p class="hint" id="accountNote"></p>
       </div>
       <div class="settings-group">
-        <h3>Help + privacy</h3>
+        <h3 data-i18n>Help + privacy</h3>
         <div class="settings-links">
-          <a class="soft-btn" href="support.html"><svg class="ico"><use href="#i-chat"/></svg><span>Support</span></a>
-          <a class="soft-btn" href="privacy.html"><svg class="ico"><use href="#i-file"/></svg><span>Privacy</span></a>
+          <a class="soft-btn" href="support.html" data-i18n><svg class="ico"><use href="#i-chat"/></svg><span>Support</span></a>
+          <a class="soft-btn" href="privacy.html" data-i18n><svg class="ico"><use href="#i-file"/></svg><span>Privacy</span></a>
         </div>
       </div>
       <div class="settings-group brand-foot">
         <svg class="brand-mark" aria-hidden="true"><use href="#i-logo"/></svg>
-        <div><strong>Pace Calendar</strong><span>Your day, at your pace.</span></div>
+        <div><strong>Pace Calendar</strong><span data-i18n>Your day, at your pace.</span></div>
       </div>
     </section>
   </main>
@@ -305,25 +305,25 @@ try {
 <!-- QUICK ADD -->
 <div id="addSheet" class="sheet" hidden>
   <div class="sheet-card">
-    <h3>Add a task</h3>
+    <h3 data-i18n>Add a task</h3>
     <label class="field">
-      <input type="text" id="quickText" placeholder="e.g. Ring the plumber tomorrow at 9am for 30 minutes" aria-label="Say it in one sentence">
+      <input type="text" id="quickText" data-i18n-ph placeholder="e.g. Ring the plumber tomorrow at 9am for 30 minutes" aria-label="Say it in one sentence">
     </label>
     <div id="quickPreview" class="quick-preview" hidden></div>
-    <details class="details-fallback"><summary>Or fill in the details</summary>
-      <label class="field">Title <input type="text" id="fTitle"></label>
+    <details class="details-fallback"><summary data-i18n>Or fill in the details</summary>
+      <label class="field" data-i18n>Title <input type="text" id="fTitle"></label>
       <div class="field-row">
-        <label class="field">Date <input type="date" id="fDate"></label>
-        <label class="field">Time <input type="time" id="fTime"></label>
-        <label class="field">Minutes <input type="number" id="fDur" value="25" min="5" step="5"></label>
+        <label class="field" data-i18n>Date <input type="date" id="fDate"></label>
+        <label class="field" data-i18n>Time <input type="time" id="fTime"></label>
+        <label class="field" data-i18n>Minutes <input type="number" id="fDur" value="25" min="5" step="5"></label>
       </div>
-      <label class="field">Smallest version (for low days) <input type="text" id="fMin" placeholder="e.g. Just ring and rebook"></label>
-      <label class="field">Biggest version (for full days) <input type="text" id="fFull" placeholder="e.g. The whole deep clean"></label>
-      <label class="row check"><input type="checkbox" id="fEssential"> This one must not slip</label>
+      <label class="field" data-i18n>Smallest version (for low days) <input type="text" id="fMin" data-i18n-ph placeholder="e.g. Just ring and rebook"></label>
+      <label class="field" data-i18n>Biggest version (for full days) <input type="text" id="fFull" data-i18n-ph placeholder="e.g. The whole deep clean"></label>
+      <label class="row check" data-i18n><input type="checkbox" id="fEssential"> This one must not slip</label>
     </details>
     <div class="sheet-actions">
-      <button id="addCancel" class="soft-btn">Cancel</button>
-      <button id="addSave" class="primary-btn">Add task</button>
+      <button id="addCancel" class="soft-btn" data-i18n>Cancel</button>
+      <button id="addSave" class="primary-btn" data-i18n>Add task</button>
     </div>
   </div>
 </div>
@@ -331,25 +331,25 @@ try {
 <!-- TASK DETAIL -->
 <div id="taskSheet" class="sheet" hidden>
   <div class="sheet-card">
-    <h3 id="dTitle">Task</h3>
+    <h3 id="dTitle" data-i18n>Task</h3>
     <p class="hint" id="dMeta"></p>
     <div id="dSteps"></div>
-    <button id="dBreak" class="soft-btn">Break this into small steps</button>
-    <label class="field">Smallest version (low days) <input type="text" id="dMin"></label>
-    <label class="field">Biggest version (full days) <input type="text" id="dFull"></label>
+    <button id="dBreak" class="soft-btn" data-i18n>Break this into small steps</button>
+    <label class="field" data-i18n>Smallest version (low days) <input type="text" id="dMin"></label>
+    <label class="field" data-i18n>Biggest version (full days) <input type="text" id="dFull"></label>
     <div class="field-row">
-      <label class="field">Date <input type="date" id="dDate"></label>
-      <label class="field">Time <input type="time" id="dTime"></label>
-      <label class="field">Minutes <input type="number" id="dDur" min="5" step="5"></label>
+      <label class="field" data-i18n>Date <input type="date" id="dDate"></label>
+      <label class="field" data-i18n>Time <input type="time" id="dTime"></label>
+      <label class="field" data-i18n>Minutes <input type="number" id="dDur" min="5" step="5"></label>
     </div>
-    <label class="row check"><input type="checkbox" id="dEssential"> This one must not slip</label>
-    <details class="original-keep" id="dOriginalWrap" hidden><summary>The words this came from</summary><pre id="dOriginal"></pre></details>
+    <label class="row check" data-i18n><input type="checkbox" id="dEssential"> This one must not slip</label>
+    <details class="original-keep" id="dOriginalWrap" hidden><summary data-i18n>The words this came from</summary><pre id="dOriginal"></pre></details>
     <div class="sheet-actions wrap">
-      <button id="dDone" class="primary-btn"><svg class="ico"><use href="#i-check"/></svg>Done</button>
-      <button id="dDoing" class="soft-btn"><svg class="ico"><use href="#i-play"/></svg>Doing</button>
-      <button id="dNotToday" class="soft-btn"><svg class="ico"><use href="#i-h-moon"/></svg>Not today</button>
-      <button id="dDelete" class="soft-btn danger"><svg class="ico"><use href="#i-trash"/></svg>Delete</button>
-      <button id="dClose" class="soft-btn"><svg class="ico"><use href="#i-x"/></svg>Close</button>
+      <button id="dDone" class="primary-btn" data-i18n><svg class="ico"><use href="#i-check"/></svg>Done</button>
+      <button id="dDoing" class="soft-btn" data-i18n><svg class="ico"><use href="#i-play"/></svg>Doing</button>
+      <button id="dNotToday" class="soft-btn" data-i18n><svg class="ico"><use href="#i-h-moon"/></svg>Not today</button>
+      <button id="dDelete" class="soft-btn danger" data-i18n><svg class="ico"><use href="#i-trash"/></svg>Delete</button>
+      <button id="dClose" class="soft-btn" data-i18n><svg class="ico"><use href="#i-x"/></svg>Close</button>
     </div>
   </div>
 </div>
@@ -362,13 +362,13 @@ try {
   <div class="sheet-card plus-card">
     <button id="plusClose" class="icon-btn guide-x" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
     <div id="plusArt" class="plus-badge" aria-hidden="true"></div>
-    <h3 class="plus-title">That's a Plus thing.</h3>
-    <p class="plus-line">Plus holds the full set of Looks, Talk to it, repeating tasks, and a few more kind helpers.</p>
-    <p class="plus-line">Plus is A$4.99 a month, or A$39.99 a year. Your first month is free.</p>
-    <p class="plus-line plus-honest">Nothing is locked today, and nothing charges. This is simply where this will live when Plus arrives.</p>
+    <h3 class="plus-title" data-i18n>That's a Plus thing.</h3>
+    <p class="plus-line" data-i18n>Plus holds the full set of Looks, Talk to it, repeating tasks, and a few more kind helpers.</p>
+    <p class="plus-line" data-i18n>Plus is A$4.99 a month, or A$39.99 a year. Your first month is free.</p>
+    <p class="plus-line plus-honest" data-i18n>Nothing is locked today, and nothing charges. This is simply where this will live when Plus arrives.</p>
     <div class="sheet-actions">
-      <button id="plusNotNow" class="soft-btn">Not now</button>
-      <button id="plusPlans" class="primary-btn">See the plans</button>
+      <button id="plusNotNow" class="soft-btn" data-i18n>Not now</button>
+      <button id="plusPlans" class="primary-btn" data-i18n>See the plans</button>
     </div>
   </div>
 </div>
@@ -377,20 +377,20 @@ try {
      popup — never during joining. Plus is not on sale yet. -->
 <div id="plansSheet" class="sheet" hidden>
   <div class="sheet-card">
-    <h3>Plans</h3>
+    <h3 data-i18n>Plans</h3>
     <div class="plan-card">
-      <h4>Free forever</h4>
-      <p>The calendar, the White and Black looks, your lists and habits. Free means free.</p>
+      <h4 data-i18n>Free forever</h4>
+      <p data-i18n>The calendar, the White and Black looks, your lists and habits. Free means free.</p>
     </div>
     <div class="plan-card plan-plus">
-      <h4>Plus</h4>
-      <p>When Plus arrives, it holds: all six Looks and Cute mode · Talk to it · repeating tasks · breaking a task into small steps · a stretch task borrowed from tomorrow · the energy levels in your own words · the To Do board · the kind round-up.</p>
-      <p class="plan-price">A$4.99 a month, or A$39.99 a year. First month free.</p>
-      <p>Or Plus for life: A$99.99, once.</p>
-      <p class="plan-state">Not on sale yet. Nothing to pay today.</p>
+      <h4 data-i18n>Plus</h4>
+      <p data-i18n>When Plus arrives, it holds: all six Looks and Cute mode · Talk to it · repeating tasks · breaking a task into small steps · a stretch task borrowed from tomorrow · the energy levels in your own words · the To Do board · the kind round-up.</p>
+      <p class="plan-price" data-i18n>A$4.99 a month, or A$39.99 a year. First month free.</p>
+      <p data-i18n>Or Plus for life: A$99.99, once.</p>
+      <p class="plan-state" data-i18n>Not on sale yet. Nothing to pay today.</p>
     </div>
     <div class="sheet-actions">
-      <button id="plansClose" class="soft-btn">Close</button>
+      <button id="plansClose" class="soft-btn" data-i18n>Close</button>
     </div>
   </div>
 </div>
@@ -403,9 +403,9 @@ try {
     <div id="guideExtra"></div>
     <div class="guide-dots" id="guideDots" aria-hidden="true"></div>
     <div class="sheet-actions">
-      <button id="guideSkip" class="soft-btn">Skip tour</button>
-      <button id="guideImport" class="soft-btn" hidden>Bring my old calendar in</button>
-      <button id="guideNext" class="primary-btn">Next</button>
+      <button id="guideSkip" class="soft-btn" data-i18n>Skip tour</button>
+      <button id="guideImport" class="soft-btn" hidden data-i18n>Bring my old calendar in</button>
+      <button id="guideNext" class="primary-btn" data-i18n>Next</button>
     </div>
   </div>
 </div>
@@ -413,24 +413,24 @@ try {
 <!-- BRING MY CALENDAR IN (shared module: calendar-import.js + IMPORT-DESIGN.md) -->
 <div id="importSheet" class="sheet" hidden>
   <div class="sheet-card">
-    <h3>Bring my calendar in</h3>
-    <p class="hint">Read-only — this copies your events into Pace Calendar. Nothing in your old calendar changes, and importing again never doubles anything.</p>
+    <h3 data-i18n>Bring my calendar in</h3>
+    <p class="hint" data-i18n>Read-only — this copies your events into Pace Calendar. Nothing in your old calendar changes, and importing again never doubles anything.</p>
     <div class="import-sources" role="group" aria-label="Where is your calendar?">
-      <button class="soft-btn import-src is-active" data-src="google">Google Calendar</button>
-      <button class="soft-btn import-src" data-src="apple">Apple / iCloud</button>
-      <button class="soft-btn import-src" data-src="outlook">Outlook</button>
-      <button class="soft-btn import-src" data-src="file">A calendar file</button>
+      <button class="soft-btn import-src is-active" data-src="google" data-i18n>Google Calendar</button>
+      <button class="soft-btn import-src" data-src="apple" data-i18n>Apple / iCloud</button>
+      <button class="soft-btn import-src" data-src="outlook" data-i18n>Outlook</button>
+      <button class="soft-btn import-src" data-src="file" data-i18n>A calendar file</button>
     </div>
-    <p class="hint" id="importGuide">In Google Calendar: Settings → your calendar → “Secret address in iCal format”. Copy it, paste it below.</p>
-    <label class="row">Paste the calendar link <input type="url" id="importUrl" placeholder="https://… .ics" autocomplete="off"></label>
+    <p class="hint" id="importGuide" data-i18n>In Google Calendar: Settings → your calendar → “Secret address in iCal format”. Copy it, paste it below.</p>
+    <label class="row" data-i18n>Paste the calendar link <input type="url" id="importUrl" placeholder="https://… .ics" autocomplete="off"></label>
     <div class="draft-actions">
-      <button id="importGo" class="primary-btn">Bring it in</button>
-      <button id="importFileBtn" class="soft-btn">Choose a file instead</button>
+      <button id="importGo" class="primary-btn" data-i18n>Bring it in</button>
+      <button id="importFileBtn" class="soft-btn" data-i18n>Choose a file instead</button>
       <input type="file" id="importFile" accept=".ics,text/calendar" hidden>
     </div>
     <p class="hint" id="importResult" role="status"></p>
     <div class="sheet-actions">
-      <button id="importClose" class="soft-btn">Done</button>
+      <button id="importClose" class="soft-btn" data-i18n>Done</button>
     </div>
   </div>
 </div>
@@ -438,12 +438,12 @@ try {
 <!-- WELCOME -->
 <div id="welcome" class="sheet" hidden>
   <div class="sheet-card">
-    <h3 id="welcomeTitle">Welcome to Pace Calendar</h3>
-    <p><strong>Your day, at your pace.</strong></p>
-    <p>The day shapes itself around you.</p>
+    <h3 id="welcomeTitle" data-i18n>Welcome to Pace Calendar</h3>
+    <p><strong data-i18n>Your day, at your pace.</strong></p>
+    <p data-i18n>The day shapes itself around you.</p>
     <div class="sheet-actions">
-      <button id="welcomeNotif" class="primary-btn">Turn on notifications</button>
-      <button id="welcomeSkip" class="soft-btn">Not now</button>
+      <button id="welcomeNotif" class="primary-btn" data-i18n>Turn on notifications</button>
+      <button id="welcomeSkip" class="soft-btn" data-i18n>Not now</button>
     </div>
   </div>
 </div>
@@ -459,20 +459,20 @@ try {
     <div id="doorStep1">
       <div class="door-hero">
         <span class="door-tile"><svg class="brand-mark" aria-hidden="true"><use href="#i-logo"/></svg></span>
-        <span class="door-title">Pace Calendar</span>
-        <span class="door-sub">Sign in or make your account</span>
+        <span class="door-title" data-i18n>Pace Calendar</span>
+        <span class="door-sub" data-i18n>Sign in or make your account</span>
       </div>
       <div class="door-social">
         <button id="googleBtn" class="door-social-btn" aria-label="Continue with Google"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.3c0-.9-.1-1.5-.3-2.2H12v4.3h6.5c-.1 1.1-.8 2.7-2.4 3.8l3.7 2.9c2.3-2.1 3.7-5.2 3.7-8.8z"/><path fill="#34A853" d="M12 24c3.2 0 5.9-1.1 7.9-2.9l-3.7-2.9c-1 .7-2.4 1.2-4.2 1.2-3.2 0-5.9-2.1-6.8-5l-3.9 3C3.3 21.3 7.3 24 12 24z"/><path fill="#FBBC05" d="M5.2 14.4c-.2-.7-.4-1.5-.4-2.4s.1-1.7.4-2.4l-3.9-3C.5 8.2 0 10 0 12s.5 3.8 1.3 5.4l3.9-3z"/><path fill="#EA4335" d="M12 4.7c1.8 0 3 .8 3.7 1.4l3.3-3.2C17.9 1.1 15.2 0 12 0 7.3 0 3.3 2.7 1.3 6.6l3.9 3c.9-2.8 3.6-4.9 6.8-4.9z"/></svg></button>
         <button id="appleBtn" class="door-social-btn" aria-label="Continue with Apple" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.05 12.54c0-2.4 1.96-3.55 2.05-3.6-1.12-1.64-2.86-1.86-3.48-1.89-1.48-.15-2.89.87-3.64.87-.75 0-1.9-.85-3.13-.83-1.61.02-3.1.94-3.93 2.38-1.68 2.9-.43 7.2 1.2 9.56.8 1.15 1.75 2.45 3 2.4 1.2-.05 1.66-.78 3.12-.78s1.87.78 3.14.75c1.3-.02 2.12-1.17 2.91-2.33.92-1.34 1.3-2.64 1.32-2.7-.03-.01-2.54-.98-2.56-3.88zM14.65 5.4c.66-.8 1.1-1.91.98-3.02-.95.04-2.1.63-2.78 1.43-.61.71-1.14 1.84-.99 2.92 1.05.08 2.13-.53 2.79-1.33z"/></svg></button>
       </div>
-      <div class="door-divider"><span>or with email</span></div>
+      <div class="door-divider"><span data-i18n>or with email</span></div>
       <input type="email" id="authEmail" class="door-email" autocomplete="email" placeholder="you@example.com" aria-label="Email">
       <p class="hint" id="authMsg1" role="status"></p>
       <div class="door-arrow-row">
         <button id="doorNext" class="door-arrow" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11h13.2l-5-5L13.6 4.6 21 12l-7.4 7.4L12.2 18l5-5H4z" fill="currentColor"/></svg></button>
       </div>
-      <p class="door-note">Just looking? <button id="authClose" class="door-explore">Explore the app first</button></p>
+      <p class="door-note" data-i18n>Just looking? <button id="authClose" data-i18n class="door-explore">Explore the app first</button></p>
     </div>
     <!-- STEP 2: the email (with Change), the password, one
          button, the forgot line. -->
@@ -480,17 +480,17 @@ try {
       <div class="door-topbar">
         <button id="doorBack" class="door-back" aria-label="Back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11H6.8l5-5L10.4 4.6 3 12l7.4 7.4L11.8 18l-5-5H20z" fill="currentColor"/></svg></button>
         <svg class="brand-mark" aria-hidden="true"><use href="#i-logo"/></svg>
-        <span class="door-topname">Pace Calendar</span>
+        <span class="door-topname" data-i18n>Pace Calendar</span>
       </div>
-      <div class="door-email-pill"><span id="doorEmailEcho"></span><button id="doorChange" class="mini-btn">Change</button></div>
-      <label class="field">Your password <span class="pw-wrap"><input type="password" id="authPass" autocomplete="current-password" placeholder="Your password"><button type="button" id="pwEye" class="pw-eye" aria-label="Show password"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c5 0 9.3 3 11 7-1.7 4-6 7-11 7S2.7 16 1 12c1.7-4 6-7 11-7zm0 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" fill="currentColor"/></svg></button></span></label>
+      <div class="door-email-pill"><span id="doorEmailEcho"></span><button id="doorChange" class="mini-btn" data-i18n>Change</button></div>
+      <label class="field" data-i18n>Your password <span class="pw-wrap"><input type="password" id="authPass" data-i18n-ph autocomplete="current-password" placeholder="Your password"><button type="button" id="pwEye" class="pw-eye" aria-label="Show password"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c5 0 9.3 3 11 7-1.7 4-6 7-11 7S2.7 16 1 12c1.7-4 6-7 11-7zm0 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" fill="currentColor"/></svg></button></span></label>
       <p class="hint" id="authMsg" role="status"></p>
       <div class="draft-actions">
-        <button id="authGo" class="primary-btn">Continue</button>
+        <button id="authGo" class="primary-btn" data-i18n>Continue</button>
       </div>
-      <p class="door-note">This one button does both. It signs you in, or makes your account if you are new.</p>
+      <p class="door-note" data-i18n>This one button does both. It signs you in, or makes your account if you are new.</p>
       <div class="draft-actions">
-        <button id="authReset" class="mini-btn">Forgot password?</button>
+        <button id="authReset" class="mini-btn" data-i18n>Forgot password?</button>
       </div>
     </div>
   </div>
@@ -499,11 +499,11 @@ try {
 <!-- GUEST-UPLOAD DOOR (Security PC-1: explicit yes, offered once) -->
 <div id="potSheet" class="sheet" hidden>
   <div class="sheet-card">
-    <h3>Bring your things into your account?</h3>
-    <p class="hint" id="potText">This device has a guest calendar on it.</p>
+    <h3 data-i18n>Bring your things into your account?</h3>
+    <p class="hint" id="potText" data-i18n>This device has a guest calendar on it.</p>
     <div class="sheet-actions">
-      <button id="potNo" class="soft-btn">Start fresh</button>
-      <button id="potYes" class="primary-btn">Bring my things in</button>
+      <button id="potNo" class="soft-btn" data-i18n>Start fresh</button>
+      <button id="potYes" class="primary-btn" data-i18n>Bring my things in</button>
     </div>
   </div>
 </div>
@@ -511,13 +511,13 @@ try {
 <!-- DELETE ACCOUNT (the user's own hand only) -->
 <div id="deleteSheet" class="sheet" hidden>
   <div class="sheet-card">
-    <h3>Delete your account?</h3>
-    <p class="hint">This deletes your account and everything saved to it. Your guest calendar on this device is not touched. This cannot be undone.</p>
-    <label class="field">Password, to be sure <input type="password" id="deletePass" autocomplete="current-password"></label>
+    <h3 data-i18n>Delete your account?</h3>
+    <p class="hint" data-i18n>This deletes your account and everything saved to it. Your guest calendar on this device is not touched. This cannot be undone.</p>
+    <label class="field" data-i18n>Password, to be sure <input type="password" id="deletePass" autocomplete="current-password"></label>
     <p class="hint" id="deleteMsg" role="status"></p>
     <div class="sheet-actions">
-      <button id="deleteCancel" class="soft-btn">Keep my account</button>
-      <button id="deleteGo" class="primary-btn">Delete my account</button>
+      <button id="deleteCancel" class="soft-btn" data-i18n>Keep my account</button>
+      <button id="deleteGo" class="primary-btn" data-i18n>Delete my account</button>
     </div>
   </div>
 </div>
@@ -525,6 +525,7 @@ try {
 <div id="toast" class="toast" hidden></div>
 
 <script src="fullcalendar.js"></script>
+<script src="i18n.js"></script>
 <script src="logic.js"></script>
 <script src="vendor/tesseract/tesseract.min.js"></script>
 <script src="vendor/ical/ical.min.js"></script>
