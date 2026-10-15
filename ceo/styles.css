@@ -1,0 +1,40 @@
+/* Pace Calendar CEO — the app's own board tokens (Dawn over still
+   water): Porcelain Mist ground, Pine Shade ink, Still Water
+   accent. Calm law: one section open, numbers first, no alarms. */
+@font-face { font-family: "Bricolage Grotesque"; src: url("fonts/BricolageGrotesque.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "Manrope"; src: url("fonts/Manrope.ttf") format("truetype"); font-display: swap; }
+:root {
+  --ground: #f3f5fa; --card: #ffffff; --ink: #21392e; --ink-2: #40534a; --ink-3: #54685c;
+  --hair: #dde3ee; --accent: #5b6bd5; --accent-strong: #4858c4; --water: #aeb8ec;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--ground); color: var(--ink); font-family: "Manrope", system-ui, sans-serif; }
+h1, h2, h3, .num, .brand strong { font-family: "Bricolage Grotesque", "Manrope", sans-serif; }
+.hint { color: var(--ink-3); font-size: 13.5px; }
+.row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 10px 0; font-weight: 600; }
+.row input { flex: 1; max-width: 260px; padding: 10px 12px; border: 1px solid var(--hair); border-radius: 10px; font: inherit; }
+.primary-btn { background: var(--accent-strong); color: #fff; border: 0; border-radius: 999px; padding: 11px 20px; font: inherit; font-weight: 700; cursor: pointer; min-height: 44px; }
+.soft-btn { background: var(--card); color: var(--ink); border: 1px solid var(--hair); border-radius: 999px; padding: 10px 16px; font: inherit; font-weight: 600; cursor: pointer; min-height: 44px; }
+.door { min-height: 100vh; display: grid; place-items: center; padding: 20px; }
+.door-card { background: var(--card); border: 1px solid var(--hair); border-radius: 20px; padding: 28px; width: min(420px, 100%); }
+.door-card h1 span { color: var(--accent); }
+.actions { display: flex; gap: 10px; margin-top: 14px; }
+.room { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+.side { background: var(--card); border-right: 1px solid var(--hair); padding: 18px 14px; display: flex; flex-direction: column; gap: 14px; }
+.brand { display: flex; flex-direction: column; }
+.brand span { color: var(--accent); font-weight: 700; }
+.side nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.side nav button { text-align: left; background: transparent; border: 0; border-radius: 10px; padding: 11px 12px; font: inherit; font-weight: 600; color: var(--ink-2); cursor: pointer; min-height: 44px; }
+.side nav button.is-on { background: var(--ground); color: var(--ink); }
+.main { padding: 26px; max-width: 880px; }
+.trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 14px 0 22px; }
+.stat { background: var(--card); border: 1px solid var(--hair); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 4px; }
+.num { font-size: 34px; font-weight: 700; }
+.lab { color: var(--ink-3); font-size: 13px; font-weight: 600; }
+.series { display: flex; flex-direction: column; gap: 6px; }
+.series .wk { display: flex; justify-content: space-between; background: var(--card); border: 1px solid var(--hair); border-radius: 10px; padding: 9px 14px; font-weight: 600; }
+.rows { display: flex; flex-direction: column; gap: 8px; }
+.rows .item { background: var(--card); border: 1px solid var(--hair); border-radius: 12px; padding: 12px 14px; }
+.rows .item.flag { border-color: #d66; }
+.big-line { font-size: 18px; }
+@media (max-width: 700px) { .room { grid-template-columns: 1fr; } .side { flex-direction: row; flex-wrap: wrap; align-items: center; } .side nav { flex-direction: row; flex-wrap: wrap; } .trio { grid-template-columns: 1fr; } }
