@@ -8,6 +8,7 @@
   --hair: #dde3ee; --accent: #5b6bd5; --accent-strong: #4858c4; --water: #aeb8ec;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; } /* display-styled shells (.door/.room are grid) must still honour hidden — live-caught stacking */
 body { margin: 0; background: var(--ground); color: var(--ink); font-family: "Manrope", system-ui, sans-serif; }
 h1, h2, h3, .num, .brand strong { font-family: "Bricolage Grotesque", "Manrope", sans-serif; }
 .hint { color: var(--ink-3); font-size: 13.5px; }
