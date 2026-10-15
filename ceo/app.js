@@ -84,8 +84,19 @@
       set("mPending", n);
       FB.fsCount("aggSubs", st("ended")).then(function (e) { set("mEnded", e); set("ovLeaving", n + e); });
     });
-    FB.fsSum("aggSubs", "amountCents", st("active")).then(function (c) { set("mMrr", money(c)); });
+    // MRR computes from the list below, client-side (the pattern's
+    // own scale rule): a filtered SUM aggregation demands a
+    // composite index Firestore does not auto-build — live-caught
+    // on the twin ("The query requires an index").
     FB.fsList("aggSubs").then(function (subs) {
+      var est = 0;
+      subs.forEach(function (d) {
+        if (d.status !== "active") return;
+        var c = typeof d.amountCents === "number" ? d.amountCents : null;
+        if (c == null) return;
+        est += d.interval === "week" ? Math.round(c * 52 / 12) : c;
+      });
+      set("mMrr", money(est));
       var reasons = subs.filter(function (s) { return s.cancelReason; }).map(function (s) { return "Cancel reason: " + s.cancelReason; });
       if (reasons.length) $("mReasons").textContent = reasons.join(" · ");
     }).catch(function () {});
