@@ -4,6 +4,7 @@
 (function () {
 "use strict";
 var L = window.CalmLogic;
+var tr = window.t; /* the language layer (i18n.js) — aliased: too many locals are named t */
 var STORE = "calmcal-v1";
 /* Accounts wave: the document gets an owner. Storage keys are
    per-identity — "calmcal-v1:guest" signed out, "calmcal-v1:<uid>"
@@ -264,13 +265,13 @@ $("bgPhotoFile").addEventListener("change", function () {
     if (!kept) {
       state.settings.appearance.photo = prev.photo; state.settings.appearance.photoMode = prev.photoMode; state.settings.appearance.bgChoice = prev.bgChoice;
       save(); applyAppearance();
-      toast("That photo is too big to keep on this device. A smaller one will fit.");
+      toast(tr("That photo is too big to keep on this device. A smaller one will fit."));
       return;
     }
     applyAppearance();
-    toast("Your photo is the background now. A soft veil keeps the words readable.");
+    toast(tr("Your photo is the background now. A soft veil keeps the words readable."));
   };
-  img.onerror = function () { URL.revokeObjectURL(url); toast("That file did not read as a photo. Nothing changed."); };
+  img.onerror = function () { URL.revokeObjectURL(url); toast(tr("That file did not read as a photo. Nothing changed.")); };
   img.src = url;
 });
 $("photoApply").addEventListener("click", function () {
@@ -281,7 +282,7 @@ $("photoRemove").addEventListener("click", function () {
   var a = state.settings.appearance;
   var kept = { photo: a.photo, photoMode: a.photoMode };
   a.photo = null; a.bgChoice = "theme"; save(); applyAppearance();
-  toast("Photo removed.", function () {
+  toast(tr("Photo removed."), function () {
     state.settings.appearance.photo = kept.photo; state.settings.appearance.photoMode = kept.photoMode; state.settings.appearance.bgChoice = "photo";
     save(); applyAppearance();
   });
@@ -304,7 +305,7 @@ function toast(msg, undoFn) {
   clearTimeout(toastTimer);
   if (typeof undoFn === "function") {
     var b = document.createElement("button");
-    b.type = "button"; b.className = "toast-undo"; b.textContent = "Undo";
+    b.type = "button"; b.className = "toast-undo"; b.textContent = tr("Undo");
     b.addEventListener("click", function () { clearTimeout(toastTimer); t.hidden = true; undoFn(); });
     t.appendChild(b);
     t.hidden = false;
@@ -320,7 +321,7 @@ function restoreAt(arr, item, index) { arr.splice(Math.min(index, arr.length), 0
 function renderTicker() {
   var el = $("ticker"); el.innerHTML = "";
   var start = L.addDays(selected, -15);
-  var names = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  var names = []; for (var nd = 0; nd < 7; nd++) names.push(new Date(2024, 0, nd).toLocaleDateString(LOCALE, { weekday: "short" }).replace(".", ""));
   for (var i = 0; i < 31; i++) {
     (function (key) {
       var d = L.parseKey(key);
@@ -341,6 +342,10 @@ function renderTicker() {
 }
 var tickerBooted = false;
 
+var LOCALE = PACE_LANG === "es" ? "es" : "en-AU";
+var FACTORY_NAMES = { low: "Bad", steady: "Ok", full: "Great" };
+function displayLevelName(k) { var n = state.settings.names[k]; return n === FACTORY_NAMES[k] ? tr(n) : n; }
+
 /* ---------- day list (the adapted plan) ---------- */
 function renderDayList() {
   var key = selected;
@@ -349,28 +354,28 @@ function renderDayList() {
   var d = L.parseKey(key);
   var level = levelFor(key);
   var names = state.settings.names;
-  var html = "<h3>" + d.toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long" }) +
-    '<span class="dl-score">' + score.done + " of " + score.total + " done at your " + esc(names[level]) + " pace</span></h3>";
+  var html = "<h3>" + d.toLocaleDateString(LOCALE, { weekday: "long", day: "numeric", month: "long" }) +
+    '<span class="dl-score">' + tr("{done} of {total} done at your {name} pace", { done: score.done, total: score.total, name: displayLevelName(level) }) + "</span></h3>";
   html += '<div class="dl-progress"><i style="width:' + score.pct + '%"></i></div>';
-  if (!ad.visible.length && !ad.done.length) html += '<div class="empty-note dock-note"><span class="dock-skip">' + skipSvg("goodbye") + '</span><span>Nothing today. Empty is allowed.</span></div>';
+  if (!ad.visible.length && !ad.done.length) html += '<div class="empty-note dock-note"><span class="dock-skip">' + skipSvg("goodbye") + '</span><span>' + tr("Nothing today. Empty is allowed.") + '</span></div>';
   ad.visible.forEach(function (t) { html += rowHtml(t, false); });
   ad.done.forEach(function (t) { html += rowHtml(t, true); });
-  if (ad.stretch) html += '<div class="stretch-note">One more from tomorrow: <strong>' + esc(ad.stretch.title) + '</strong><button data-act="stretch" data-id="' + ad.stretch.id + '">Bring it to today</button></div>';
-  if (ad.parked.length) html += '<p class="parked-note">' + (ad.parked.length === 1 ? "1 thing" : ad.parked.length + " things") + " parked. Parked, not dropped. Raise the level to bring them back.</p>";
+  if (ad.stretch) html += '<div class="stretch-note">' + tr("One more from tomorrow:") + ' <strong>' + esc(ad.stretch.title) + '</strong><button data-act="stretch" data-id="' + ad.stretch.id + '">' + tr("Bring it to today") + '</button></div>';
+  if (ad.parked.length) html += '<p class="parked-note">' + tr(ad.parked.length === 1 ? "{n} thing parked. Parked, not dropped. Raise the level to bring them back." : "{n} things parked. Parked, not dropped. Raise the level to bring them back.", { n: ad.parked.length }) + "</p>";
   $("dayList").innerHTML = html;
   bindRows($("dayList"));
 }
 function rowHtml(t, done) {
   var meta = [];
   if (t.time) meta.push(t.time);
-  meta.push("about " + t.durationMin + " min");
-  if (t.steps && t.steps.length) meta.push(t.steps.filter(function (s) { return s.done; }).length + " of " + t.steps.length + " steps");
-  if (t.shrunk) meta.push("small version");
-  if (t.repeat) meta.push(t.repeat);
+  meta.push(tr("about {n} min", { n: t.durationMin }));
+  if (t.steps && t.steps.length) meta.push(tr("{a} of {b} steps", { a: t.steps.filter(function (s) { return s.done; }).length, b: t.steps.length }));
+  if (t.shrunk) meta.push(tr("small version"));
+  if (t.repeat) meta.push(tr(t.repeat));
   return '<div draggable="true" class="task-row' + (done ? " is-done" : "") + '" data-id="' + t.id + '" data-date="' + t.instanceDate + '">' +
     '<span class="tr-dot" style="background:' + t.color + '"></span>' +
     '<span class="tr-main"><span class="tr-title">' + esc(t.displayTitle || t.title) + '</span><span class="tr-meta">' + esc(meta.join(" · ")) + "</span></span>" +
-    '<button class="tr-check" data-check="' + t.id + '" aria-label="Mark done">' + (done ? icon("i-check") : "") + "</button></div>";
+    '<button class="tr-check" data-check="' + t.id + '" aria-label="' + tr("Mark done") + '">' + (done ? icon("i-check") : "") + "</button></div>";
 }
 function bindRows(root) {
   root.querySelectorAll(".task-row").forEach(function (row) {
@@ -389,7 +394,7 @@ function bindRows(root) {
   var st = root.querySelector('[data-act="stretch"]');
   if (st) st.addEventListener("click", function () {
     var t = baseTask(st.getAttribute("data-id"));
-    if (t) { moveInstance(t, L.addDays(selected, 1), selected); toast("Brought to today. Only because you asked."); refreshAll(); }
+    if (t) { moveInstance(t, L.addDays(selected, 1), selected); toast(tr("Brought to today. Only because you asked.")); refreshAll(); }
   });
 }
 function toggleDone(id, dateKey) {
@@ -400,7 +405,7 @@ function toggleDone(id, dateKey) {
     if (i === -1) t.doneDates.push(dateKey); else t.doneDates.splice(i, 1);
   } else {
     t.status = t.status === "done" ? "todo" : "done";
-    if (t.status === "done") toast("Done. That counts.");
+    if (t.status === "done") toast(tr("Done. That counts."));
   }
   save(); refreshAll();
 }
@@ -431,10 +436,10 @@ function renderUpNext() {
   if (!next) { el.hidden = true; return; }
   el.hidden = false;
   var firstStep = (next.steps && next.steps.some(function (s) { return !s.done; })) ? L.nextStepText(next) : "";
-  el.innerHTML = '<span class="un-label">Up next</span><strong>' + esc(next.displayTitle || next.title) + "</strong> · about " + next.durationMin + " min" +
-    (next.time ? " · " + next.time : "") + (firstStep ? "<br><span style='color:var(--ink-3)'>" + esc(firstStep) + "</span>" : "") + '<button data-un="' + next.id + '">Start</button>';
+  el.innerHTML = '<span class="un-label">' + tr("Up next") + '</span><strong>' + esc(next.displayTitle || next.title) + "</strong> · " + tr("about {n} min", { n: next.durationMin }) +
+    (next.time ? " · " + next.time : "") + (firstStep ? "<br><span style='color:var(--ink-3)'>" + esc(firstStep) + "</span>" : "") + '<button data-un="' + next.id + '">' + tr("Start") + '</button>';
   el.querySelector("[data-un]").addEventListener("click", function () {
-    var t = baseTask(next.id); if (t) { t.status = "doing"; save(); refreshAll(); toast("Started. One step at a time."); }
+    var t = baseTask(next.id); if (t) { t.status = "doing"; save(); refreshAll(); toast(tr("Started. One step at a time.")); }
   });
 }
 
@@ -444,21 +449,20 @@ function renderCheckin() {
   document.querySelectorAll(".level-btn").forEach(function (b) {
     b.classList.toggle("is-active", b.getAttribute("data-level") === level);
   });
-  var names = state.settings.names;
-  document.querySelectorAll("[data-level-name]").forEach(function (s) { s.textContent = names[s.getAttribute("data-level-name")]; });
+  document.querySelectorAll("[data-level-name]").forEach(function (s) { s.textContent = displayLevelName(s.getAttribute("data-level-name")); });
   var sl = $("sideLevel");
   var todayLevel = state.feelings[L.todayKey()];
-  sl.innerHTML = todayLevel ? "Today: <strong>" + esc(names[todayLevel]) + "</strong>" : "No check-in yet today";
-  $("checkinQ").textContent = selected === L.todayKey() ? "How are you feeling today?" : "How does this day feel?";
+  sl.innerHTML = todayLevel ? tr("Today:") + " <strong>" + esc(displayLevelName(todayLevel)) + "</strong>" : tr("No check-in yet today");
+  $("checkinQ").textContent = selected === L.todayKey() ? tr("How are you feeling today?") : tr("How does this day feel?");
 }
 document.querySelectorAll(".level-btn").forEach(function (b) {
   b.addEventListener("click", function () {
     var level = b.getAttribute("data-level");
     state.feelings[selected] = level; save();
     markActivated("check-in");
-    if (level === "low") toast("Bad day. Small list — the rest is parked, safe.");
-    else if (level === "full") toast("Great day. A little more is on the table.");
-    else toast("Ok day. A small, capped list.");
+    if (level === "low") toast(tr("Bad day. Small list — the rest is parked, safe."));
+    else if (level === "full") toast(tr("Great day. A little more is on the table."));
+    else toast(tr("Ok day. A small, capped list."));
     refreshAll();
   });
 });
@@ -481,6 +485,7 @@ function fcEvents() {
 function initCalendar() {
   calendar = new FullCalendar.Calendar($("calendar"), {
     initialView: "dayGridMonth",
+    locale: PACE_LANG === "es" ? "es" : "en",
     height: "auto",
     firstDay: 1,
     headerToolbar: false,
@@ -516,7 +521,7 @@ function initCalendar() {
         t.date = newKey;
         if (!info.event.allDay) t.time = L.pad(newStart.getHours()) + ":" + L.pad(newStart.getMinutes());
       }
-      save(); refreshAll(); toast("Moved. The day re-shaped itself.");
+      save(); refreshAll(); toast(tr("Moved. The day re-shaped itself."));
     },
     eventResize: function (info) {
       var t = baseTask(info.event.extendedProps.taskId); if (!t) return;
@@ -532,7 +537,7 @@ function initCalendar() {
 }
 function renderTitle() {
   var d = calendar ? calendar.getDate() : L.parseKey(selected);
-  $("monthTitle").textContent = d.toLocaleDateString("en-AU", { month: "long", year: "numeric" });
+  $("monthTitle").textContent = d.toLocaleDateString(LOCALE, { month: "long", year: "numeric" });
 }
 function refreshCalendar() {
   if (!calendar) return;
@@ -559,7 +564,7 @@ function renderYear() {
   if (currentView !== "year") return;
   var year = L.parseKey(selected).getFullYear();
   var html = '<div class="year-grid">';
-  var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  var monthNames = []; for (var mn = 0; mn < 12; mn++) monthNames.push(new Date(2024, mn, 1).toLocaleDateString(LOCALE, { month: "long" }));
   for (var m = 0; m < 12; m++) {
     var first = new Date(year, m, 1);
     var daysIn = new Date(year, m + 1, 0).getDate();
@@ -625,8 +630,8 @@ $("quickText").addEventListener("input", function () {
   if (!item) { $("quickPreview").hidden = true; return; }
   $("quickPreview").hidden = false;
   $("quickPreview").innerHTML = "<strong>" + esc(item.title) + "</strong><br>" +
-    esc(L.parseKey(item.date).toLocaleDateString("en-AU", { weekday: "short", day: "numeric", month: "short" })) +
-    (item.time ? " at " + item.time : " · no time yet") + " · about " + item.durationMin + " min" +
+    esc(L.parseKey(item.date).toLocaleDateString(LOCALE, { weekday: "short", day: "numeric", month: "short" })) +
+    (item.time ? tr(" at {time}", { time: item.time }) : tr(" · no time yet")) + " · " + tr("about {n} min", { n: item.durationMin }) +
     (item.repeat ? " · " + esc(item.repeat) : "") + (item.essential ? " · must not slip" : "");
 });
 $("addSave").addEventListener("click", function () {
@@ -639,12 +644,12 @@ $("addSave").addEventListener("click", function () {
     var item = L.parseItem($("quickText").value.trim(), selected);
     if (item) task = { title: item.title, date: item.date, time: item.time, durationMin: item.durationMin, priority: item.priority, repeat: item.repeat, category: item.category, color: item.color, essential: item.essential, steps: item.steps, minVersion: $("fMin").value.trim(), fullVersion: $("fFull").value.trim() };
   }
-  if (!task) { toast("Give it a title first, even a messy one."); return; }
+  if (!task) { toast(tr("Give it a title first, even a messy one.")); return; }
   task.id = uid(); task.status = "todo"; task.source = "manual"; task.originalText = $("quickText").value.trim(); task.skipDates = []; task.doneDates = [];
   state.tasks.push(task); save(); markActivated("event");
   $("addSheet").hidden = true;
   selectDate(task.date, true); refreshAll();
-  toast("Added. Small and clear.");
+  toast(tr("Added. Small and clear."));
 });
 
 /* ---------- task sheet ---------- */
@@ -654,11 +659,11 @@ function openTask(id, instanceDate) {
   var inst = instanceOf(t, currentInstanceDate);
   $("dTitle").textContent = inst.title;
   var meta = [];
-  meta.push(L.parseKey(currentInstanceDate).toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long" }));
+  meta.push(L.parseKey(currentInstanceDate).toLocaleDateString(LOCALE, { weekday: "long", day: "numeric", month: "long" }));
   if (inst.time) meta.push(inst.time);
-  meta.push("about " + inst.durationMin + " min");
-  if (inst.repeat) meta.push("repeats " + inst.repeat + " · changes to date or done apply to this day only");
-  if (inst.source === "sample") meta.push("sample task");
+  meta.push(tr("about {n} min", { n: inst.durationMin }));
+  if (inst.repeat) meta.push(tr("repeats {repeat} · changes to date or done apply to this day only", { repeat: tr(inst.repeat) }));
+  if (inst.source === "sample") meta.push(tr("sample task"));
   $("dMeta").textContent = meta.join(" · ");
   renderSteps(t);
   $("dMin").value = t.minVersion || "";
@@ -673,7 +678,7 @@ function openTask(id, instanceDate) {
 }
 function renderSteps(t) {
   var box = $("dSteps");
-  if (!t.steps || !t.steps.length) { box.innerHTML = '<p class="hint">No steps yet.</p>'; return; }
+  if (!t.steps || !t.steps.length) { box.innerHTML = '<p class="hint">' + tr("No steps yet.") + '</p>'; return; }
   box.innerHTML = t.steps.map(function (s, i) {
     return '<label class="step-row' + (s.done ? " is-done" : "") + '"><input type="checkbox" data-step="' + i + '"' + (s.done ? " checked" : "") + "><span>" + esc(s.text) + "</span></label>";
   }).join("");
@@ -688,7 +693,7 @@ $("dBreak").addEventListener("click", function () {
   var t = baseTask(currentTaskId); if (!t) return;
   if (!t.steps || !t.steps.length) t.steps = L.decompose(t.title, t.durationMin, true);
   else t.steps = t.steps.concat(L.decompose(t.title, t.durationMin, true));
-  save(); renderSteps(t); refreshAll(); toast("Broken down. Only the first step matters right now.");
+  save(); renderSteps(t); refreshAll(); toast(tr("Broken down. Only the first step matters right now."));
 });
 function persistSheetFields() {
   var t = baseTask(currentTaskId); if (!t) return;
@@ -713,28 +718,28 @@ $("dDoing").addEventListener("click", function () {
   var t = baseTask(currentTaskId); if (!t) return;
   persistSheetFields();
   if (t.repeat) { t.doneDates = (t.doneDates || []).filter(function (d) { return d !== currentInstanceDate; }); }
-  t.status = "doing"; save(); $("taskSheet").hidden = true; refreshAll(); toast("Doing. One step at a time.");
+  t.status = "doing"; save(); $("taskSheet").hidden = true; refreshAll(); toast(tr("Doing. One step at a time."));
 });
 $("dNotToday").addEventListener("click", function () {
   var t = baseTask(currentTaskId); if (!t) return;
   persistSheetFields();
   moveInstance(t, currentInstanceDate, L.addDays(currentInstanceDate, 1));
   save(); $("taskSheet").hidden = true; refreshAll();
-  toast("Moved to tomorrow. That counts as handling it.");
+  toast(tr("Moved to tomorrow. That counts as handling it."));
 });
 $("dDelete").addEventListener("click", function () {
   var t = baseTask(currentTaskId); if (!t) return;
   if (t.repeat) {
     t.skipDates = t.skipDates || [];
     if (t.skipDates.indexOf(currentInstanceDate) === -1) t.skipDates.push(currentInstanceDate);
-    toast("Removed for this day. The rest of the series stays.", function () {
+    toast(tr("Removed for this day. The rest of the series stays."), function () {
       t.skipDates = t.skipDates.filter(function (d) { return d !== currentInstanceDate; });
-      save(); refreshAll(); toast("Back again.");
+      save(); refreshAll(); toast(tr("Back again."));
     });
   } else {
     var taskIdx = state.tasks.indexOf(t);
     state.tasks = state.tasks.filter(function (x) { return x.id !== currentTaskId; });
-    toast("Deleted.", function () { restoreAt(state.tasks, t, taskIdx); save(); refreshAll(); toast("Back again."); });
+    toast(tr("Deleted."), function () { restoreAt(state.tasks, t, taskIdx); save(); refreshAll(); toast(tr("Back again.")); });
   }
   save(); $("taskSheet").hidden = true; refreshAll();
 });
@@ -743,7 +748,7 @@ $("dDelete").addEventListener("click", function () {
 $("parseBtn").addEventListener("click", function () {
   var text = $("dumpText").value;
   drafts = L.parseDump(text, L.todayKey());
-  if (!drafts.length) { $("captureMsg").textContent = "Nothing I could sort yet. Try one thing per line, like: call the dentist tomorrow at 3pm."; return; }
+  if (!drafts.length) { $("captureMsg").textContent = tr("Nothing I could sort yet. Try one thing per line, like: call the dentist tomorrow at 3pm."); return; }
   $("captureMsg").textContent = "";
   renderDrafts(text);
 });
@@ -756,10 +761,10 @@ function renderDrafts(original) {
     card.className = "draft-card";
     card.innerHTML = '<span class="tr-dot" style="background:' + d.color + '"></span><div style="flex:1">' +
       '<input type="text" data-f="title" value="' + esc(d.title) + '">' +
-      '<div class="dc-meta"><input type="date" data-f="date" value="' + d.date + '"><input type="time" data-f="time" value="' + (d.time || "") + '"><input type="number" data-f="durationMin" value="' + d.durationMin + '" min="5" step="5" style="width:76px"><span class="hint">min</span>' +
-      (d.repeat ? '<span class="hint">' + esc(d.repeat) + "</span>" : "") + (d.essential ? '<span class="hint">must not slip</span>' : "") + "</div>" +
+      '<div class="dc-meta"><input type="date" data-f="date" value="' + d.date + '"><input type="time" data-f="time" value="' + (d.time || "") + '"><input type="number" data-f="durationMin" value="' + d.durationMin + '" min="5" step="5" style="width:76px"><span class="hint">' + tr("min") + '</span>' +
+      (d.repeat ? '<span class="hint">' + esc(tr(d.repeat)) + "</span>" : "") + (d.essential ? '<span class="hint">' + tr("must not slip") + '</span>' : "") + "</div>" +
       (d.steps && d.steps.length ? '<ol class="dc-steps">' + d.steps.map(function (s) { return "<li>" + esc(s.text) + "</li>"; }).join("") + "</ol>" : "") +
-      '</div><button class="dc-del" data-del="' + i + '">Remove</button>';
+      '</div><button class="dc-del" data-del="' + i + '">' + tr("Remove") + '</button>';
     card.querySelectorAll("[data-f]").forEach(function (inp) {
       inp.addEventListener("change", function () {
         var f = inp.getAttribute("data-f");
@@ -782,12 +787,12 @@ $("draftAddAll").addEventListener("click", function () {
   var n = drafts.length;
   drafts = []; $("draftArea").hidden = true; $("dumpText").value = "";
   showPanel("calendar"); selectDate(L.todayKey(), true); refreshAll();
-  toast(n + (n === 1 ? " thing" : " things") + " sorted onto your calendar.");
+  toast(tr(n === 1 ? "{n} thing sorted onto your calendar." : "{n} things sorted onto your calendar.", { n: n }));
 });
 $("journalFile").addEventListener("change", function (e) {
   var f = e.target.files[0]; if (!f) return;
   var r = new FileReader();
-  r.onload = function () { $("dumpText").value = String(r.result || ""); $("captureMsg").textContent = "Journal loaded. Tap Make my list when you are ready."; };
+  r.onload = function () { $("dumpText").value = String(r.result || ""); $("captureMsg").textContent = tr("Journal loaded. Tap Make my list when you are ready."); };
   r.readAsText(f);
 });
 /* Voice engine: ONE engine for every Speak button. In the store app it
@@ -798,12 +803,12 @@ $("journalFile").addEventListener("change", function (e) {
    Typing always works exactly the same. */
 var voiceSession = null;
 function voiceErrorText(code) {
-  if (code === "not-allowed" || code === "service-not-allowed") return "The microphone is blocked. Allow the mic for Pace, then tap Speak again. Typing works the same.";
-  if (code === "audio-capture") return "No microphone could be found. Typing works the same.";
-  if (code === "no-speech") return "I did not hear anything. Try again, a little closer. Typing works the same.";
-  if (code === "network") return "Voice typing needs the internet on this device. Typing works the same.";
+  if (code === "not-allowed" || code === "service-not-allowed") return tr("The microphone is blocked. Allow the mic for Pace, then tap Speak again. Typing works the same.");
+  if (code === "audio-capture") return tr("No microphone could be found. Typing works the same.");
+  if (code === "no-speech") return tr("I did not hear anything. Try again, a little closer. Typing works the same.");
+  if (code === "network") return tr("Voice typing needs the internet on this device. Typing works the same.");
   if (code === "aborted") return "";
-  return "Voice did not come through. Typing works the same.";
+  return tr("Voice did not come through. Typing works the same.");
 }
 function nativeSpeech() {
   try {
@@ -816,12 +821,12 @@ function nativeSpeech() {
 function toggleVoice(hooks) {
   if (voiceSession) { voiceSession.stop(); return; }
   var btn = hooks.btn, span = btn.querySelector("span");
-  var done = function () { voiceSession = null; if (span) span.textContent = "Speak"; };
+  var done = function () { voiceSession = null; if (span) span.textContent = tr("Speak"); };
   var nat = nativeSpeech();
   if (nat) {
     var stopped = false;
     voiceSession = { stop: function () { stopped = true; try { nat.stop(); } catch (e) {} done(); } };
-    if (span) span.textContent = "Stop";
+    if (span) span.textContent = tr("Stop");
     hooks.msg("Listening… talk away, then tap Stop.");
     nat.requestPermissions().then(function (perm) {
       if (perm && perm.speechRecognition && perm.speechRecognition !== "granted") { hooks.msg(voiceErrorText("not-allowed")); done(); return null; }
@@ -844,7 +849,7 @@ function toggleVoice(hooks) {
   rec.lang = "en-AU"; rec.interimResults = true; rec.continuous = true;
   var heardFinal = false;
   voiceSession = { stop: function () { try { rec.stop(); } catch (e) {} } };
-  if (span) span.textContent = "Stop";
+  if (span) span.textContent = tr("Stop");
   hooks.msg("Listening… talk away, then tap Stop.");
   rec.onresult = function (ev) {
     var interim = "";
@@ -868,7 +873,7 @@ $("voiceBtn").addEventListener("click", function () {
     msg: function (t) { $("captureMsg").textContent = t; },
     final: function (said) {
       $("dumpText").value = ($("dumpText").value ? $("dumpText").value + "\n" : "") + said;
-      $("captureMsg").textContent = "Got it. Check the words, then tap Make my list.";
+      $("captureMsg").textContent = tr("Got it. Check the words, then tap Make my list.");
     }
   });
 });
@@ -887,22 +892,22 @@ var OCR_OPTIONS = {
   gzip: !OCR_IN_APP
 };
 function ocrPhoto(f, msgEl, onText) {
-  msgEl.textContent = "Reading your photo. This can take a little while the first time.";
+  msgEl.textContent = tr("Reading your photo. This can take a little while the first time.");
   if (!window.Tesseract) {
-    msgEl.textContent = "The reading tool did not load. Typing or speaking works the same.";
+    msgEl.textContent = tr("The reading tool did not load. Typing or speaking works the same.");
     return;
   }
   window.Tesseract.recognize(f, "eng", OCR_OPTIONS).then(function (res) {
     var text = (res && res.data && res.data.text || "").trim();
     if (text) onText(text);
-    else msgEl.textContent = "I could not read words in that photo. Typing or speaking works the same.";
-  }).catch(function () { msgEl.textContent = "Reading the photo did not work this time. Typing or speaking works the same."; });
+    else msgEl.textContent = tr("I could not read words in that photo. Typing or speaking works the same.");
+  }).catch(function () { msgEl.textContent = tr("Reading the photo did not work this time. Typing or speaking works the same."); });
 }
 $("photoFile").addEventListener("change", function (e) {
   var f = e.target.files[0]; if (!f) return;
   ocrPhoto(f, $("captureMsg"), function (text) {
     $("dumpText").value = ($("dumpText").value ? $("dumpText").value + "\n" : "") + text;
-    $("captureMsg").textContent = "Here is what I could read. Fix any words, then tap Make my list.";
+    $("captureMsg").textContent = tr("Here is what I could read. Fix any words, then tap Make my list.");
   });
 });
 
@@ -929,28 +934,28 @@ function linkTodo(item) {
 function renderTodos() {
   var wrap = $("todoList"); if (!wrap) return;
   wrap.innerHTML = "";
-  if (!state.todos.length) wrap.innerHTML = '<div class="empty-note">' + icon("i-todo") + "<span>Nothing here. Write one fast, above.</span></div>";
+  if (!state.todos.length) wrap.innerHTML = '<div class="empty-note">' + icon("i-todo") + "<span>" + tr("Nothing here. Write one fast, above.") + "</span></div>";
   state.todos.forEach(function (item) {
     var row = document.createElement("div");
     row.className = "todo-row" + (item.done ? " is-done" : "");
     row.innerHTML =
-      '<button class="todo-tick" data-act="tick" aria-label="Mark done">' + (item.done ? icon("i-check") : "") + "</button>" +
+      '<button class="todo-tick" data-act="tick" aria-label="' + tr("Mark done") + '">' + (item.done ? icon("i-check") : "") + "</button>" +
       '<span class="todo-text"></span>' +
-      '<button class="todo-cal' + (todoLinked(item) ? " is-on" : "") + '" data-act="cal" aria-label="Put on the calendar" title="Put on the calendar">' + icon("i-calplus") + "</button>" +
-      '<button class="todo-del" data-act="del" aria-label="Delete">' + icon("i-trash") + "</button>";
+      '<button class="todo-cal' + (todoLinked(item) ? " is-on" : "") + '" data-act="cal" aria-label="' + tr("Put on the calendar") + '" title="' + tr("Put on the calendar") + '">' + icon("i-calplus") + "</button>" +
+      '<button class="todo-del" data-act="del" aria-label="' + tr("Delete") + '">' + icon("i-trash") + "</button>";
     row.querySelector(".todo-text").textContent = item.text;
     row.querySelectorAll("button").forEach(function (b) {
       b.addEventListener("click", function () {
         var act = b.getAttribute("data-act");
         if (act === "tick") { item.done = !item.done; save(); renderTodos(); }
-        else if (act === "del") { var todoIdx = state.todos.indexOf(item); state.todos = state.todos.filter(function (t) { return t.id !== item.id; }); save(); renderTodos(); toast("Deleted.", function () { restoreAt(state.todos, item, todoIdx); save(); renderTodos(); toast("Back again."); }); }
+        else if (act === "del") { var todoIdx = state.todos.indexOf(item); state.todos = state.todos.filter(function (t) { return t.id !== item.id; }); save(); renderTodos(); toast(tr("Deleted."), function () { restoreAt(state.todos, item, todoIdx); save(); renderTodos(); toast(tr("Back again.")); }); }
         else if (act === "cal") {
           if (todoLinked(item)) {
             var linked = baseTask(item.calTaskId); var linkedIdx = linked ? state.tasks.indexOf(linked) : -1;
             state.tasks = state.tasks.filter(function (t) { return t.id !== item.calTaskId; });
             item.calTaskId = null; save(); refreshAll();
-            toast("Off the calendar. Still on your list.", linked ? function () { restoreAt(state.tasks, linked, linkedIdx); item.calTaskId = linked.id; save(); refreshAll(); toast("Back again."); } : undefined);
-          } else if (linkTodo(item)) { save(); refreshAll(); toast("On today's calendar."); }
+            toast(tr("Off the calendar. Still on your list."), linked ? function () { restoreAt(state.tasks, linked, linkedIdx); item.calTaskId = linked.id; save(); refreshAll(); toast(tr("Back again.")); } : undefined);
+          } else if (linkTodo(item)) { save(); refreshAll(); toast(tr("On today's calendar.")); }
         }
       });
     });
@@ -967,26 +972,26 @@ $("todoClearDone").addEventListener("click", function () {
   var cleared = []; state.todos.forEach(function (t, i) { if (t.done) cleared.push([t, i]); });
   state.todos = state.todos.filter(function (t) { return !t.done; });
   save(); renderTodos();
-  toast("Done list cleared.", function () { cleared.forEach(function (p) { restoreAt(state.todos, p[0], p[1]); }); save(); renderTodos(); toast("Back again."); });
+  toast(tr("Done list cleared."), function () { cleared.forEach(function (p) { restoreAt(state.todos, p[0], p[1]); }); save(); renderTodos(); toast(tr("Back again.")); });
 });
 $("todoCalAll").addEventListener("click", function () {
   var n = 0;
   state.todos.forEach(function (item) { if (!item.done && linkTodo(item)) n++; });
   save(); refreshAll();
-  toast(n ? n + (n === 1 ? " item" : " items") + " on today's calendar." : "Everything is already on the calendar.");
+  toast(n ? tr(n === 1 ? "{n} item on today's calendar." : "{n} items on today's calendar.", { n: n }) : tr("Everything is already on the calendar."));
 });
 $("todoVoiceBtn").addEventListener("click", function () {
   toggleVoice({
     btn: $("todoVoiceBtn"),
     msg: function (t) { $("todoMsg").textContent = t; },
-    final: function (said) { if (addTodo(said)) { save(); renderTodos(); toast("Added: " + said); } }
+    final: function (said) { if (addTodo(said)) { save(); renderTodos(); toast(tr("Added: {x}", { x: said })); } }
   });
 });
 $("todoPhoto").addEventListener("change", function (e) {
   var f = e.target.files[0]; if (!f) return;
   ocrPhoto(f, $("todoMsg"), function (text) {
     var lines = text.split(/\n+/).map(function (x) { return x.trim(); }).filter(Boolean);
-    if (!lines.length) { $("todoMsg").textContent = "I could not read a list in that photo."; return; }
+    if (!lines.length) { $("todoMsg").textContent = tr("I could not read a list in that photo."); return; }
     var list = $("todoDraftList"); list.innerHTML = "";
     lines.forEach(function (line) {
       var lab = document.createElement("label");
@@ -1004,7 +1009,7 @@ $("todoDraftAdd").addEventListener("click", function () {
   $("todoDraftList").querySelectorAll("input[type=checkbox]:checked").forEach(function (cb) { if (addTodo(cb.value)) n++; });
   $("todoDraftArea").hidden = true;
   save(); renderTodos();
-  toast(n ? n + (n === 1 ? " to-do" : " to-dos") + " added." : "Nothing ticked, nothing added.");
+  toast(n ? tr(n === 1 ? "{n} to-do added." : "{n} to-dos added.", { n: n }) : tr("Nothing ticked, nothing added."));
 });
 $("todoDraftClear").addEventListener("click", function () { $("todoDraftArea").hidden = true; });
 
@@ -1026,7 +1031,7 @@ function renderIconPicker() {
 function renderHabits() {
   var wrap = $("habitList"); if (!wrap) return;
   wrap.innerHTML = "";
-  if (!state.habits.length) wrap.innerHTML = '<div class="empty-note">' + icon("i-habits") + "<span>No habits yet. Name one and pick its icon below.</span></div>";
+  if (!state.habits.length) wrap.innerHTML = '<div class="empty-note">' + icon("i-habits") + "<span>" + tr("No habits yet. Name one and pick its icon below.") + "</span></div>";
   var today = L.todayKey();
   state.habits.forEach(function (h, idx) {
     var info = L.streakInfo(h.days, today);
@@ -1040,10 +1045,10 @@ function renderHabits() {
     row.innerHTML =
       '<span class="habit-ico tint-' + (idx % 6) + '">' + icon(habitIconId(h.icon)) + "</span>" +
       '<span class="habit-main"><span class="habit-name"></span>' +
-      '<span class="habit-streak">' + streakDots + (info.current ? '<span class="streak-num">' + info.current + " in a row</span>" : '<span class="streak-none">No run yet</span>') + "</span></span>" +
+      '<span class="habit-streak">' + streakDots + (info.current ? '<span class="streak-num">' + tr("{n} in a row", { n: info.current }) + "</span>" : '<span class="streak-none">' + tr("No run yet") + "</span>") + "</span></span>" +
       '<span class="habit-week">' + dots + "</span>" +
-      '<button class="habit-tick' + (h.days[today] ? " is-done" : "") + '" aria-label="Done today">' + (h.days[today] ? icon("i-check") : "") + "</button>" +
-      '<button class="habit-del" aria-label="Delete habit">' + icon("i-trash") + "</button>";
+      '<button class="habit-tick' + (h.days[today] ? " is-done" : "") + '" aria-label="' + tr("Done today") + '">' + (h.days[today] ? icon("i-check") : "") + "</button>" +
+      '<button class="habit-del" aria-label="' + tr("Delete habit") + '">' + icon("i-trash") + "</button>";
     row.querySelector(".habit-name").textContent = h.name;
     row.querySelectorAll(".week-dot").forEach(function (d) {
       d.addEventListener("click", function () {
@@ -1060,7 +1065,7 @@ function renderHabits() {
       var habitIdx = state.habits.indexOf(h);
       state.habits = state.habits.filter(function (x) { return x.id !== h.id; });
       save(); renderHabits();
-      toast("Habit removed.", function () { restoreAt(state.habits, h, habitIdx); save(); renderHabits(); toast("Back again."); });
+      toast(tr("Habit removed."), function () { restoreAt(state.habits, h, habitIdx); save(); renderHabits(); toast(tr("Back again.")); });
     });
     wrap.appendChild(row);
   });
@@ -1068,7 +1073,7 @@ function renderHabits() {
 }
 function submitHabit() {
   var name = $("habitName").value.trim();
-  if (!name) { toast("Give the habit a name first."); return; }
+  if (!name) { toast(tr("Give the habit a name first.")); return; }
   state.habits.push({ id: uid(), name: name, icon: habitPick, days: {} });
   $("habitName").value = "";
   save(); renderHabits();
@@ -1083,19 +1088,19 @@ function renderProgress() {
   var todayAd = adaptedFor(L.todayKey());
   var ts = L.dayScore(todayAd);
   $("progressSummary").innerHTML =
-    "<div><strong>" + ts.done + " of " + ts.total + "</strong>done today, at your pace</div>" +
-    "<div><strong>" + all.filter(function (t) { return t.status === "doing"; }).length + "</strong>in progress</div>" +
-    "<div><strong>" + all.filter(function (t) { return t.status !== "done"; }).length + "</strong>still on the list, all safe</div>" +
-    "<div><strong>" + doneCount + "</strong>things finished, counted forever</div>";
+    "<div><strong>" + tr("{a} of {b}", { a: ts.done, b: ts.total }) + "</strong>" + tr("done today, at your pace") + "</div>" +
+    "<div><strong>" + all.filter(function (t) { return t.status === "doing"; }).length + "</strong>" + tr("in progress") + "</div>" +
+    "<div><strong>" + all.filter(function (t) { return t.status !== "done"; }).length + "</strong>" + tr("still on the list, all safe") + "</div>" +
+    "<div><strong>" + doneCount + "</strong>" + tr("things finished, counted forever") + "</div>";
   ["todo", "doing", "done"].forEach(function (status) {
     var col = $("col-" + status); col.innerHTML = "";
     var list = all.filter(function (t) { return t.status === status; }).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
-    if (!list.length) col.innerHTML = '<p class="hint">Nothing here right now.</p>';
+    if (!list.length) col.innerHTML = '<p class="hint">' + tr("Nothing here right now.") + '</p>';
     list.forEach(function (t) {
       var card = document.createElement("div");
       card.className = "p-card"; card.draggable = true; card.setAttribute("data-pid", t.id);
       card.innerHTML = '<span class="pc-title">' + esc(t.title) + '</span><span class="pc-meta"><span class="tr-dot" style="background:' + t.color + '"></span>' +
-        esc(L.parseKey(t.date).toLocaleDateString("en-AU", { weekday: "short", day: "numeric", month: "short" })) + (t.time ? " · " + t.time : "") + " · " + t.durationMin + " min" + (t.repeat ? " · " + esc(t.repeat) : "") + "</span>";
+        esc(L.parseKey(t.date).toLocaleDateString(LOCALE, { weekday: "short", day: "numeric", month: "short" })) + (t.time ? " · " + t.time : "") + " · " + tr("{n} min", { n: t.durationMin }) + (t.repeat ? " · " + esc(t(t.repeat)) : "") + "</span>";
       card.addEventListener("click", function () { openTask(t.id, t.date); });
       card.addEventListener("dragstart", function (e) { e.dataTransfer.setData("text/plain", t.id); });
       col.appendChild(card);
@@ -1109,7 +1114,7 @@ document.querySelectorAll(".board-col").forEach(function (col) {
     e.preventDefault(); col.classList.remove("drag-over");
     var t = baseTask(e.dataTransfer.getData("text/plain")); if (!t) return;
     t.status = col.getAttribute("data-status");
-    if (t.status === "done") toast("Done. That counts.");
+    if (t.status === "done") toast(tr("Done. That counts."));
     save(); renderProgress(); refreshAll();
   });
 });
@@ -1134,7 +1139,7 @@ $("ticker").addEventListener("drop", function (e) {
   var t = baseTask(info.id); if (!t) return;
   e.preventDefault();
   moveInstance(t, info.date, cell.getAttribute("data-date"));
-  save(); refreshAll(); toast("Moved. The day re-shaped itself.");
+  save(); refreshAll(); toast(tr("Moved. The day re-shaped itself."));
 });
 
 /* ---------- settings ---------- */
@@ -1171,16 +1176,16 @@ $("clearSamples").addEventListener("click", function () {
   var samples = []; state.tasks.forEach(function (t, i) { if (t.source === "sample") samples.push([t, i]); });
   state.tasks = state.tasks.filter(function (t) { return t.source !== "sample"; });
   save(); refreshAll();
-  toast("Sample tasks removed. This is fully yours now.", samples.length ? function () { samples.forEach(function (p) { restoreAt(state.tasks, p[0], p[1]); }); save(); refreshAll(); toast("Back again."); } : undefined);
+  toast(tr("Sample tasks removed. This is fully yours now."), samples.length ? function () { samples.forEach(function (p) { restoreAt(state.tasks, p[0], p[1]); }); save(); refreshAll(); toast(tr("Back again.")); } : undefined);
 });
 
 /* ---------- notifications ---------- */
 function renderNotifStatus() {
   var n = state.settings.notif;
-  $("notifStatus").textContent = !("Notification" in window) ? "This browser does not offer notifications." :
-    n.perm === "granted" ? "Notifications are on. You choose what they say and when." :
-    n.perm === "denied" ? "Notifications are blocked in the browser. You can allow them in the browser site settings." :
-    "Notifications are off.";
+  $("notifStatus").textContent = !("Notification" in window) ? tr("This browser does not offer notifications.") :
+    n.perm === "granted" ? tr("Notifications are on. You choose what they say and when.") :
+    n.perm === "denied" ? tr("Notifications are blocked in the browser. You can allow them in the browser site settings.") :
+    tr("Notifications are off.");
 }
 function notify(title, body, key) {
   if (state.sent[key]) return;
@@ -1195,21 +1200,21 @@ function notify(title, body, key) {
   fire();
 }
 function requestNotif() {
-  if (!("Notification" in window)) { toast("This browser does not offer notifications."); return; }
+  if (!("Notification" in window)) { toast(tr("This browser does not offer notifications.")); return; }
   Notification.requestPermission().then(function (p) {
     state.settings.notif.perm = p; save(); renderNotifStatus();
-    if (p === "granted") toast("Notifications on. Gentle ones, chosen by you.");
-    else toast("No problem. The app still works fully without them.");
+    if (p === "granted") toast(tr("Notifications on. Gentle ones, chosen by you."));
+    else toast(tr("No problem. The app still works fully without them."));
   });
 }
 $("notifEnable").addEventListener("click", requestNotif);
 $("notifTest").addEventListener("click", function () {
-  if (!("Notification" in window)) { toast("This browser does not offer notifications."); return; }
-  if (Notification.permission !== "granted") { toast("Turn notifications on first, then the test can arrive."); return; }
-  try { new Notification("Pace", { body: "This is your test. Gentle, like the real ones." }); } catch (e) {}
+  if (!("Notification" in window)) { toast(tr("This browser does not offer notifications.")); return; }
+  if (Notification.permission !== "granted") { toast(tr("Turn notifications on first, then the test can arrive.")); return; }
+  try { new Notification("Pace", { body: tr("This is your test. Gentle, like the real ones.") }); } catch (e) {}
 });
 $("notifPause").addEventListener("click", function () {
-  state.settings.pausedDate = L.todayKey(); save(); toast("Paused for today. Silence is a fine choice.");
+  state.settings.pausedDate = L.todayKey(); save(); toast(tr("Paused for today. Silence is a fine choice."));
 });
 function checkNotifications() {
   if (!("Notification" in window) || Notification.permission !== "granted") return;
@@ -1218,22 +1223,22 @@ function checkNotifications() {
   var now = new Date(), hhmm = L.pad(now.getHours()) + ":" + L.pad(now.getMinutes());
   var n = s.notif;
   if (n.checkin && hhmm === s.checkinTime && !state.feelings[today]) {
-    notify("How are you feeling today?", "One tap sets the shape of your day.", "checkin-" + today);
+    notify(tr("How are you feeling today?"), tr("One tap sets the shape of your day."), "checkin-" + today);
   }
   var ad = adaptedFor(today);
   if (n.start) {
     ad.visible.forEach(function (t) {
       if (!t.time) return;
       if (L.nudgeTime(t, n.setup) === hhmm) {
-        notify("Time to start: " + (t.displayTitle || t.title), "First step: " + L.nextStepText(t) + " · about " + t.durationMin + " min.", "start-" + t.id + "-" + today);
+        notify(tr("Time to start: {title}", { title: (t.displayTitle || t.title) }), tr("First step: {step} · about {n} min.", { step: L.nextStepText(t), n: t.durationMin }), "start-" + t.id + "-" + today);
       }
     });
   }
   if (n.digest && n.digestTimes.indexOf(hhmm) !== -1) {
-    notify("Your day, gently", L.digestText(ad.visible), "digest-" + today + "-" + hhmm);
+    notify(tr("Your day, gently"), L.digestText(ad.visible), "digest-" + today + "-" + hhmm);
   }
   if (n.done && hhmm === n.doneTime && ad.done.length) {
-    notify("Today, done", ad.done.length + (ad.done.length === 1 ? " thing" : " things") + " done today. The rest is parked for tomorrow.", "done-" + today);
+    notify(tr("Today, done"), tr(ad.done.length === 1 ? "{n} thing done today. The rest is parked for tomorrow." : "{n} things done today. The rest is parked for tomorrow.", { n: ad.done.length }), "done-" + today);
   }
 }
 setInterval(checkNotifications, 30000);
@@ -1243,7 +1248,7 @@ if (!state.welcomed) {
   // Address the user by their own name when the profile
   // carries one (asked at sign-up; theirs alone).
   var wn = (state.settings.profileName || "").trim().split(/\s+/)[0];
-  if (wn) $("welcomeTitle").textContent = "Welcome to Pace Calendar, " + wn;
+  if (wn) $("welcomeTitle").textContent = tr("Welcome to Pace Calendar, {name}", { name: wn });
   $("welcome").hidden = false;
 }
 $("welcomeSkip").addEventListener("click", function () { state.welcomed = true; save(); $("welcome").hidden = true; maybeGuide(); });
@@ -1302,8 +1307,8 @@ function showGuide(step) {
   guideStep = step;
   var s = TOUR[step];
   $("guideArt").innerHTML = skipSvg(s.pose);
-  $("guideBubble").textContent = s.bubble;
-  $("guideNext").textContent = s.next;
+  $("guideBubble").textContent = tr(s.bubble);
+  $("guideNext").textContent = tr(s.next);
   $("guideImport").hidden = !s.last || DEMO_SESSION;
   $("guideDots").innerHTML = TOUR.map(function (_, i) { return '<span class="g-dot' + (i === step ? " is-on" : "") + '"></span>'; }).join("");
   // The menu stop: open the menu and dock the card beside it.
@@ -1317,7 +1322,7 @@ function showGuide(step) {
   }
   var ex = $("guideExtra");
   if (s.kind === "name") {
-    ex.innerHTML = '<input type="text" id="tourName" class="tour-name-input" autocomplete="name" placeholder="Your name" aria-label="Your name">';
+    ex.innerHTML = '<input type="text" id="tourName" class="tour-name-input" autocomplete="name" placeholder="' + tr("Your name") + '" aria-label="' + tr("Your name") + '">';
   } else if (s.themes) {
     /* The guide offers a curated set of looks (the photo modes are
        not picks; Brand joined the set with Law E). */
@@ -1348,7 +1353,7 @@ function closeGuide() {
   $("guideSheet").removeAttribute("data-dock");
   applySidebar();
   TOUR = [];
-  if (!state.settings.guideDone) { state.settings.guideDone = true; save(); toast("See you at the dock."); }
+  if (!state.settings.guideDone) { state.settings.guideDone = true; save(); toast(tr("See you at the dock.")); }
 }
 function maybeGuide() { if (!state.settings.guideDone) { buildTour(); showGuide(0); } }
 $("guideClose").addEventListener("click", closeGuide);
@@ -1364,7 +1369,7 @@ $("guideNext").addEventListener("click", function () {
     var nm = inp ? inp.value.trim().slice(0, 60) : "";
     if (nm) {
       state.settings.profileName = nm; save(); renderAccount();
-      toast("Hi " + nm.split(/\s+/)[0] + " — you're in.");
+      toast(tr("Hi {name} — you're in.", { name: nm.split(/\s+/)[0] }));
     }
   }
   if (s.last || guideStep >= TOUR.length - 1) closeGuide();
@@ -1412,7 +1417,7 @@ function shapeToTask(s) {
 }
 function runImport(text, label) {
   var parsed = window.CI.parseICS(text);
-  if (parsed.error || !parsed.events.length) { $("importResult").textContent = "That didn\u2019t read as a calendar. Nothing was brought in."; return; }
+  if (parsed.error || !parsed.events.length) { $("importResult").textContent = tr("That didn\u2019t read as a calendar. Nothing was brought in."); return; }
   var plan = window.CI.planImport(parsed, state.tasks, { sourceLabel: label });
   var res = window.CI.applyImport(state, plan, label, shapeToTask);
   save(); refreshAll();
@@ -1428,7 +1433,7 @@ function runImport(text, label) {
   if (res.dupes) bits.push(res.dupes + " already here");
   if (res.skipped) bits.push(res.skipped + " couldn\u2019t be read");
   $("importResult").textContent = bits.join(" \u00B7 ") + ".";
-  toast(res.added ? "Calendar brought in." : "Nothing new to bring in.");
+  toast(res.added ? tr("Calendar brought in.") : tr("Nothing new to bring in."));
 }
 if (DEMO_SESSION) { $("importBtn").hidden = true; $("importOpen2").hidden = true; }
 $("importBtn").addEventListener("click", openImport);
@@ -1439,16 +1444,16 @@ document.querySelectorAll(".import-src").forEach(function (b) {
   b.addEventListener("click", function () {
     importSource = b.getAttribute("data-src");
     document.querySelectorAll(".import-src").forEach(function (x) { x.classList.toggle("is-active", x === b); });
-    $("importGuide").textContent = IMPORT_GUIDE[importSource];
+    $("importGuide").textContent = tr(IMPORT_GUIDE[importSource]);
   });
 });
 $("importGo").addEventListener("click", function () {
   var url = $("importUrl").value.trim();
-  if (!url) { $("importResult").textContent = "Paste a calendar link first \u2014 or choose a file below."; return; }
-  $("importResult").textContent = "Fetching\u2026";
+  if (!url) { $("importResult").textContent = tr("Paste a calendar link first \u2014 or choose a file below."); return; }
+  $("importResult").textContent = tr("Fetching\u2026");
   fetch(url).then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.text(); })
     .then(function (t) { runImport(t, IMPORT_LABELS[importSource]); })
-    .catch(function () { $("importResult").textContent = "That link couldn\u2019t be fetched \u2014 some calendars block links. Export a .ics file from it instead; that always works."; });
+    .catch(function () { $("importResult").textContent = tr("That link couldn\u2019t be fetched \u2014 some calendars block links. Export a .ics file from it instead; that always works."); });
 });
 $("importFileBtn").addEventListener("click", function () { $("importFile").click(); });
 $("importFile").addEventListener("change", function () {
@@ -1456,7 +1461,7 @@ $("importFile").addEventListener("change", function () {
   if (!f) return;
   var rd = new FileReader();
   rd.onload = function () { runImport(String(rd.result || ""), importSource === "file" ? "a calendar file" : IMPORT_LABELS[importSource]); };
-  rd.onerror = function () { $("importResult").textContent = "That file couldn\u2019t be read."; };
+  rd.onerror = function () { $("importResult").textContent = tr("That file couldn\u2019t be read."); };
   rd.readAsText(f);
   $("importFile").value = "";
 });
@@ -1487,7 +1492,7 @@ function syncNow() {
   FB.fsSet(statePath(), { stateJson: payload, updatedAt: new Date().toISOString() })
     .then(function () { syncBusy = false; }, function () { syncBusy = false; });
   var note = $("accountNote");
-  if (note && payload.length > 800000) note.textContent = "Your saved calendar is getting large (" + Math.round(payload.length / 1000) + " KB). It still fits — a tidy-up option is coming before it ever matters.";
+  if (note && payload.length > 800000) note.textContent = tr("Your saved calendar is getting large ({kb} KB). It still fits — a tidy-up option is coming before it ever matters.", { kb: Math.round(payload.length / 1000) });
 }
 function spineTouchDaily() {
   if (!spine) return;
@@ -1615,21 +1620,21 @@ function maybePotDoor() {
   var ownReal = (state.tasks || []).some(function (t) { return t && t.source !== "sample"; }) || (state.todos || []).length > 0 || (state.habits || []).length > 0;
   if (ownReal) return;
   var n = (pot.tasks || []).length;
-  $("potText").textContent = "This device has a guest calendar on it (" + n + (n === 1 ? " event" : " events") + ", plus its lists). Bring it into your account, or start fresh — the guest copy stays on the device either way until you say.";
+  $("potText").textContent = t(n === 1 ? "This device has a guest calendar on it ({n} event, plus its lists). Bring it into your account, or start fresh — the guest copy stays on the device either way until you say." : "This device has a guest calendar on it ({n} events, plus its lists). Bring it into your account, or start fresh — the guest copy stays on the device either way until you say.", { n: n });
   $("potSheet").hidden = false;
 }
 function resolvePot(bring) {
   var pot0 = guestPot();
   localStorage.setItem("pace-pot-offered", potGeneration(pot0));
   $("potSheet").hidden = true;
-  if (!bring) { toast("Fresh start. Your guest calendar is still on this device."); return; }
+  if (!bring) { toast(tr("Fresh start. Your guest calendar is still on this device.")); return; }
   var pot = guestPot();
   if (!pot) return;
   adoptStateObject(pot);
   localStorage.setItem("pace-pot-consumed", potGeneration(pot));
   try { localStorage.setItem(STORE + ":guest", JSON.stringify(seed())); } catch (e) {}
   syncNow();
-  toast("Your things are in your account now.");
+  toast(tr("Your things are in your account now."));
 }
 function freshAccountState() {
   var s = seed();
@@ -1645,7 +1650,7 @@ function renderAccount() {
   if (ACTIVE_UID && sess) {
     var myName = (state.settings.profileName || "").trim();
     var firstName = myName ? myName.split(/\s+/)[0] : "";
-    $("accountLine").textContent = (firstName ? "Hi " + firstName + " — signed in as " : "Signed in as ") + (sess.email || "your account") + ". Your calendar saves to your account and this device.";
+    $("accountLine").textContent = (firstName ? tr("Hi {name} — signed in as {email}. Your calendar saves to your account and this device.", { name: firstName, email: (sess.email || tr("your account")) }) : tr("Signed in as {email}. Your calendar saves to your account and this device.", { email: (sess.email || tr("your account")) }));
     var pnr = $("profileNameRow"), pni = $("profileName");
     if (pnr && pni) { pnr.hidden = false; if (document.activeElement !== pni) pni.value = myName; }
     $("accountOpen").hidden = true; $("accountOut").hidden = false; $("accountDelete").hidden = false;
@@ -1654,7 +1659,7 @@ function renderAccount() {
     $("accountUncache").hidden = true;
     if (note && !note.textContent) note.textContent = "";
   } else {
-    $("accountLine").textContent = "You are using Pace on this device only. Sign in to keep your calendar safe across devices.";
+    $("accountLine").textContent = tr("You are using Pace on this device only. Sign in to keep your calendar safe across devices.");
     $("accountOpen").hidden = false; $("accountOut").hidden = true; $("accountDelete").hidden = true;
     $("accountBring").hidden = true;
     var pnr2 = $("profileNameRow"); if (pnr2) pnr2.hidden = true;
@@ -1681,7 +1686,7 @@ function bindAccounts() {
   var pni = $("profileName");
   if (pni) pni.addEventListener("change", function () {
     state.settings.profileName = pni.value.trim().slice(0, 60);
-    save(); renderAccount(); toast("We'll call you " + (state.settings.profileName.split(/\s+/)[0] || "friend") + " here.");
+    save(); renderAccount(); toast(tr("We'll call you {name} here.", { name: (state.settings.profileName.split(/\s+/)[0] || tr("friend")) }));
   });
   $("accountOpen").addEventListener("click", openAuth);
   $("authClose").addEventListener("click", function () { $("authSheet").hidden = true; });
@@ -1695,15 +1700,15 @@ function bindAccounts() {
   // The name is asked on the very next screen, never here.
   var doDoor = function () {
     var email = $("authEmail").value.trim(), pw = $("authPass").value;
-    if (!email || !pw) { authBusy("Add your email and password first."); return; }
-    authBusy("One moment…");
+    if (!email || !pw) { authBusy(tr("Add your email and password first.")); return; }
+    authBusy(tr("One moment…"));
     FB.emailSignIn(email, pw).then(function (s) { ACTIVE_UID = s.uid; afterSignIn(); })
       .catch(function (e) {
         if (e && (e.code === "EMAIL_NOT_FOUND" || e.code === "INVALID_LOGIN_CREDENTIALS")) {
-          authBusy("Creating your account…");
+          authBusy(tr("Creating your account…"));
           FB.emailSignUp(email, pw).then(function (s) { ACTIVE_UID = s.uid; afterSignIn(); })
             .catch(function (e2) {
-              if (e2 && e2.code === "EMAIL_EXISTS") authBusy("That email has an account, but the password does not match it. Try again, or tap Forgot password.");
+              if (e2 && e2.code === "EMAIL_EXISTS") authBusy(tr("That email has an account, but the password does not match it. Try again, or tap Forgot password."));
               else authBusy(e2.message);
             });
         } else authBusy(e.message);
@@ -1716,7 +1721,7 @@ function bindAccounts() {
   // walks back. Enter on the email does what the arrow does.
   var doorNext = function () {
     var email = $("authEmail").value.trim();
-    if (!email || email.indexOf("@") < 1) { $("authMsg1").textContent = "That email address does not look right."; return; }
+    if (!email || email.indexOf("@") < 1) { $("authMsg1").textContent = tr("That email address does not look right."); return; }
     $("authMsg1").textContent = "";
     $("doorEmailEcho").textContent = email;
     $("doorStep1").hidden = true;
@@ -1742,14 +1747,14 @@ function bindAccounts() {
   });
   $("authReset").addEventListener("click", function () {
     var email = $("authEmail").value.trim();
-    if (!email) { authBusy("Type your email above first, then tap Forgot password."); return; }
-    FB.sendPasswordReset(email).then(function () { authBusy("Reset email sent. Follow its link, then sign in here."); })
+    if (!email) { authBusy(tr("Type your email above first, then tap Forgot password.")); return; }
+    FB.sendPasswordReset(email).then(function () { authBusy(tr("Reset email sent. Follow its link, then sign in here.")); })
       .catch(function (e) { authBusy(e.message); });
   });
   $("googleBtn").addEventListener("click", function () {
     var cid = window.PACE_FB_CONFIG && window.PACE_FB_CONFIG.googleClientId;
-    if (!cid) { authBusy("Google sign-in is not switched on yet. Email + password works now."); return; }
-    authBusy("Opening Google…");
+    if (!cid) { authBusy(tr("Google sign-in is not switched on yet. Email + password works now.")); return; }
+    authBusy(tr("Opening Google…"));
     var go = function () {
       window.google.accounts.id.initialize({
         client_id: cid,
@@ -1779,14 +1784,14 @@ function bindAccounts() {
     a.href = URL.createObjectURL(blob); a.download = "pace-calendar-data.json"; a.click();
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
   });
-  $("accountBring").addEventListener("click", function () { $("potSheet").hidden = false; var pot = guestPot(); if (pot) $("potText").textContent = "Bring this device's guest calendar (" + (pot.tasks || []).length + " events, plus its lists) into your account? It replaces nothing — your account has no saved calendar yet."; });
+  $("accountBring").addEventListener("click", function () { $("potSheet").hidden = false; var pot = guestPot(); if (pot) $("potText").textContent = tr("Bring this device's guest calendar ({n} events, plus its lists) into your account? It replaces nothing — your account has no saved calendar yet.", { n: (pot.tasks || []).length }); });
   $("potYes").addEventListener("click", function () { resolvePot(true); });
   $("potNo").addEventListener("click", function () { resolvePot(false); });
   $("accountUncache").addEventListener("click", function () {
     var lastUid = null;
     try { lastUid = localStorage.getItem("pace-last-uid"); } catch (e) {}
     if (lastUid) { try { localStorage.removeItem(STORE + ":" + lastUid); } catch (e) {} }
-    toast("Your cached data is off this device. Your account itself is untouched.");
+    toast(tr("Your cached data is off this device. Your account itself is untouched."));
     renderAccount();
   });
   $("accountDelete").addEventListener("click", function () { $("deleteMsg").textContent = ""; $("deleteSheet").hidden = false; });
@@ -1801,9 +1806,9 @@ function bindAccounts() {
     // only writer from here. A failed delete re-arms it.
     DELETING = true;
     if (syncTimer) { clearTimeout(syncTimer); syncTimer = null; }
-    $("deleteMsg").textContent = "Checking it is you…";
+    $("deleteMsg").textContent = tr("Checking it is you…");
     FB.emailSignIn(sess.email, pw).then(function () {
-      $("deleteMsg").textContent = "Deleting…";
+      $("deleteMsg").textContent = tr("Deleting…");
       // The §6 sweep, in order (Security ruling, rules v2.2):
       // state → spine → the aggregate shards → the Auth user.
       // Erasure takes the shard: a uid-keyed row is the user's
@@ -1818,13 +1823,14 @@ function bindAccounts() {
         try { localStorage.removeItem(storeKey()); localStorage.removeItem("pace-last-uid"); } catch (e) {}
         location.reload();
       })
-      .catch(function (e) { DELETING = false; $("deleteMsg").textContent = e.message || "That did not work. Nothing was deleted."; });
+      .catch(function (e) { DELETING = false; $("deleteMsg").textContent = e.message || tr("That did not work. Nothing was deleted."); });
   });
   reconcileAccount();
 }
 
 /* ---------- boot ---------- */
 function refreshAll() { renderTicker(); renderDayList(); renderUpNext(); renderCheckin(); renderRing(); refreshCalendar(); renderYear(); renderTodos(); renderHabits(); if ($("panel-progress").classList.contains("is-active")) renderProgress(); }
+applyI18n();
 initCalendar();
 applyAppearance();
 applySidebar();
