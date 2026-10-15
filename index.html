@@ -410,23 +410,34 @@ try {
 <!-- SIGN IN (accounts wave: Google · Apple · email + password) -->
 <div id="authSheet" class="sheet" hidden>
   <div class="sheet-card">
-    <h3>Your account</h3>
-    <p class="hint">Sign in to keep your calendar safe across your devices. Pace still works fully without an account — this is a door, never a wall.</p>
+    <div class="door-mark"><svg class="brand-mark" aria-hidden="true"><use href="#i-logo"/></svg><span class="door-name">Pace Calendar</span></div>
     <div class="draft-actions">
       <button id="googleBtn" class="soft-btn">Continue with Google</button>
       <button id="appleBtn" class="soft-btn" hidden>Continue with Apple</button>
     </div>
-    <label class="field">Your name <input type="text" id="authName" autocomplete="name" placeholder="Asked when you create an account"></label>
     <label class="field">Email <input type="email" id="authEmail" autocomplete="email" placeholder="you@example.com"></label>
     <label class="field">Password <input type="password" id="authPass" autocomplete="current-password" placeholder="Your password"></label>
     <p class="hint" id="authMsg" role="status"></p>
     <div class="draft-actions">
-      <button id="authSignIn" class="primary-btn">Sign in</button>
-      <button id="authSignUp" class="soft-btn">Create account</button>
+      <button id="authGo" class="primary-btn">Continue</button>
       <button id="authReset" class="mini-btn">Forgot password</button>
     </div>
     <div class="sheet-actions">
       <button id="authClose" class="soft-btn">Not now</button>
+    </div>
+  </div>
+</div>
+
+<!-- THE NAME (door-first joining): asked on the screen right
+     after the door — one question only, then into the app. -->
+<div id="nameSheet" class="sheet" hidden>
+  <div class="sheet-card">
+    <h3>One quick thing</h3>
+    <label class="field">What's your name? <input type="text" id="nameAsk" autocomplete="name" placeholder="Your name"></label>
+    <p class="hint" id="nameMsg" role="status"></p>
+    <div class="sheet-actions">
+      <button id="nameAskGo" class="primary-btn">That's me</button>
+      <button id="nameAskSkip" class="soft-btn">Not now</button>
     </div>
   </div>
 </div>
