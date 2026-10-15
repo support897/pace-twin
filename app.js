@@ -31,7 +31,7 @@ function $(id) { return document.getElementById(id); }
 function defaultSettings() {
   return {
     checkinTime: "08:00",
-    names: { low: "Bad", steady: "Ok", full: "Good" },
+    names: { low: "Bad", steady: "Ok", full: "Great" },
     notif: { perm: "off", checkin: true, start: true, setup: 5, digest: true, digestTimes: ["12:30", "16:30"], done: false, doneTime: "20:00" },
     pausedDate: null,
     appearance: { theme: "white", cute: false, photo: null, photoMode: "light", bgChoice: "theme" },
@@ -92,6 +92,12 @@ function load(fromKey) {
     ["low", "steady", "full"].forEach(function (k) {
       if (typeof s.settings.names[k] !== "string" || !s.settings.names[k].trim()) s.settings.names[k] = defaultSettings().names[k];
     });
+    // The feeling words ruling (15 Oct): the three choices read
+    // Bad · Ok · Great. A profile still carrying the COMPLETE
+    // old factory set (Bad/Ok/Good) never customised them, so
+    // it rides the rename; any customised name is the user's
+    // own and stays exactly as they left it (Law B).
+    if (s.settings.names.low === "Bad" && s.settings.names.steady === "Ok" && s.settings.names.full === "Good") s.settings.names.full = "Great";
     s.settings.appearance = Object.assign(defaultSettings().appearance, isObj(s.settings.appearance) ? s.settings.appearance : {});
     /* Law E: the user's own background photo is USER DATA (Law B) —
        a wrong-shaped value repairs to "no photo", never deletes by
@@ -216,6 +222,11 @@ function applySidebar() {
   var root = document.documentElement;
   if (state.settings.sidebarCollapsed) root.setAttribute("data-sb", "collapsed"); else root.removeAttribute("data-sb");
   $("sbToggle").checked = !state.settings.sidebarCollapsed;
+  // F1 (final sweep): the calendar measures itself at init,
+  // before the sidebar settles — re-size it against the final
+  // layout on every sidebar change, or a fresh phone load
+  // paints the grid at a stale, narrower width forever.
+  if (calendar) calendar.updateSize();
 }
 document.querySelectorAll(".swatch[data-theme-set]").forEach(function (b) {
   b.addEventListener("click", function () { state.settings.appearance.theme = b.getAttribute("data-theme-set"); state.settings.appearance.bgChoice = "theme"; save(); applyAppearance(); });
@@ -446,7 +457,7 @@ document.querySelectorAll(".level-btn").forEach(function (b) {
     state.feelings[selected] = level; save();
     markActivated("check-in");
     if (level === "low") toast("Bad day. Small list — the rest is parked, safe.");
-    else if (level === "full") toast("Good day. A little more is on the table.");
+    else if (level === "full") toast("Great day. A little more is on the table.");
     else toast("Ok day. A small, capped list.");
     refreshAll();
   });
