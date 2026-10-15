@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pace Calendar — CEO</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+<!-- The door: sign-in only. Nothing else exists until the owner pin answers. -->
+<div id="door" class="door">
+  <div class="door-card">
+    <h1>Pace Calendar <span>CEO</span></h1>
+    <p class="hint">The owner's room. Sign in with the owner account.</p>
+    <label class="row">Email <input type="email" id="email" autocomplete="email"></label>
+    <label class="row">Password <input type="password" id="pass" autocomplete="current-password"></label>
+    <p class="hint" id="doorMsg" role="status"></p>
+    <div class="actions">
+      <button id="signIn" class="primary-btn">Sign in</button>
+      <button id="googleBtn" class="soft-btn">Google</button>
+    </div>
+  </div>
+</div>
+
+<!-- The room: aggregates only. Numbers, never people. -->
+<div id="room" class="room" hidden>
+  <aside class="side">
+    <div class="brand"><strong>Pace Calendar</strong><span>CEO</span></div>
+    <nav id="nav">
+      <button data-sec="overview" class="is-on">Overview</button>
+      <button data-sec="people">People</button>
+      <button data-sec="money">Money</button>
+      <button data-sec="reviews">Reviews</button>
+      <button data-sec="outreach">Outreach</button>
+      <button data-sec="community">Community</button>
+      <button data-sec="avatars">Avatars</button>
+      <button data-sec="app">Your app</button>
+    </nav>
+    <button id="signOut" class="soft-btn">Sign out</button>
+  </aside>
+  <main class="main">
+    <section data-panel="overview">
+      <h2>This week, in three questions</h2>
+      <div class="trio">
+        <div class="stat"><span class="num" id="ovJoined">–</span><span class="lab">joined, all time</span></div>
+        <div class="stat"><span class="num" id="ovMoney">–</span><span class="lab">paying now</span></div>
+        <div class="stat"><span class="num" id="ovLeaving">–</span><span class="lab">leaving (pending + ended)</span></div>
+      </div>
+      <h3>Signups by week</h3>
+      <div id="weekSeries" class="series"></div>
+    </section>
+    <section data-panel="people" hidden>
+      <h2>People</h2>
+      <div class="trio">
+        <div class="stat"><span class="num" id="pTotal">–</span><span class="lab">signups</span></div>
+        <div class="stat"><span class="num" id="pWeek">–</span><span class="lab">new this week</span></div>
+        <div class="stat"><span class="num" id="pAct">–</span><span class="lab">activated</span></div>
+      </div>
+      <p class="hint" id="pActNote">Activation for Pace = the first of: a completed calendar import, a first event created, a first check-in answered. Share shown is activated ÷ signups; the strict within-7-days cohort arrives with the server roll-up and is not estimated here.</p>
+    </section>
+    <section data-panel="money" hidden>
+      <h2>Money</h2>
+      <div class="trio">
+        <div class="stat"><span class="num" id="mPaying">–</span><span class="lab">paying</span></div>
+        <div class="stat"><span class="num" id="mPending">–</span><span class="lab">cancels pending</span></div>
+        <div class="stat"><span class="num" id="mEnded">–</span><span class="lab">cancels ended</span></div>
+      </div>
+      <p class="big-line">MRR estimate: <strong id="mMrr">–</strong> <span class="hint">(an estimate for steering — the payment provider stays the accounting truth)</span></p>
+      <p class="hint" id="mReasons"></p>
+      <p class="hint">Failed payments read the provider's own events; none are connected yet, so none are shown — never estimated.</p>
+    </section>
+    <section data-panel="reviews" hidden>
+      <h2>Reviews</h2>
+      <div class="trio">
+        <div class="stat"><span class="num" id="rTotal">–</span><span class="lab">reviews</span></div>
+        <div class="stat"><span class="num" id="rOpen">–</span><span class="lab">not yet replied</span></div>
+      </div>
+      <div id="reviewList" class="rows"></div>
+    </section>
+    <section data-panel="outreach" hidden>
+      <h2>Outreach — cold email</h2>
+      <div id="outreachBody" class="rows"><p class="hint">Not running yet. Campaigns appear here when the outreach desk runs one for Pace.</p></div>
+    </section>
+    <section data-panel="community" hidden>
+      <h2>Community — Facebook groups</h2>
+      <div id="groupList" class="rows"><p class="hint">No groups tracked yet. Numbers land here labelled by source — never invented.</p></div>
+    </section>
+    <section data-panel="avatars" hidden>
+      <h2>Avatars — Pace only</h2>
+      <div id="avatarList" class="rows"><p class="hint">No pieces yet.</p></div>
+    </section>
+    <section data-panel="app" hidden>
+      <h2>Your app — Pace</h2>
+      <div class="trio">
+        <div class="stat"><span class="num" id="aEvents">–</span><span class="lab">calendar events brought in</span></div>
+        <div class="stat"><span class="num" id="aImporters">–</span><span class="lab">people who brought a calendar in</span></div>
+      </div>
+      <p class="hint">Counts only, from each user's own import tally — the calendars themselves stay private in their accounts.</p>
+    </section>
+  </main>
+</div>
+<script src="firebase-config.js"></script>
+<script src="firebase.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
