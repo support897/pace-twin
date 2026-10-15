@@ -578,7 +578,19 @@ document.querySelectorAll(".side-item").forEach(function (b) {
     b.classList.add("is-active");
     $("panel-" + b.getAttribute("data-panel")).classList.add("is-active");
     if (b.getAttribute("data-panel") === "progress") renderProgress();
+    // Phone + the Muse-app shape: choosing an area shows it —
+    // the menu gives the screen back (the sliver tap and the
+    // close button do the same when no choice is made).
+    if (window.innerWidth <= 700 && !state.settings.sidebarCollapsed) {
+      state.settings.sidebarCollapsed = true; save(); applySidebar();
+    }
   });
+});
+// The sliver: one tap on the squeezed content strip closes
+// the menu and returns the full screen (phone widths; the
+// element only exists visually there, while the menu is open).
+$("sbSliver").addEventListener("click", function () {
+  state.settings.sidebarCollapsed = true; save(); applySidebar();
 });
 function showPanel(name) { document.querySelector('.side-item[data-panel="' + name + '"]').click(); }
 
