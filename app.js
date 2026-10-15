@@ -1474,9 +1474,21 @@ function reconcileAccount() {
     // while this reconcile is still fetching, so "no doc" is a
     // race the door loses on real networks (live-caught on the
     // twin journey: the door never fired, mock always won).
-    maybePotDoor();
     adoptPendingName();
+    maybeJoinDoor();
   }).catch(function () { renderAccount(); });
+}
+/* Door-first joining: after the door, ONE question — the
+   name — on its own screen, once, then straight into the
+   app (the guest-pot door follows it). A name carried by a
+   provider (the stash) or already on the profile skips the
+   screen; a skip is remembered on this device. */
+function maybeJoinDoor() {
+  if (!ACTIVE_UID || state.settings.profileName) { maybePotDoor(); return; }
+  // The "asked" stamp is per ACCOUNT, not per device — a
+  // second person joining on the same device is still asked.
+  try { if (localStorage.getItem("pace-name-asked") === ACTIVE_UID) { maybePotDoor(); return; } } catch (e) {}
+  $("nameSheet").hidden = false;
 }
 /* The name asked at sign-up (or carried by a Google door)
    lands on the profile AFTER reconcile settles — adopting it
@@ -1580,25 +1592,47 @@ function bindAccounts() {
   });
   $("accountOpen").addEventListener("click", openAuth);
   $("authClose").addEventListener("click", function () { $("authSheet").hidden = true; });
-  var doEmail = function (mode) {
+  // DOOR-FIRST JOINING (the ruling, 15 Oct): the door is only
+  // the door — mark, Google, Apple, email + password, ONE
+  // button. One tap signs a returning user in; if no account
+  // exists for the email, the same tap creates it (under
+  // enumeration protection the two failures read alike, so a
+  // create attempt follows — an EMAIL_EXISTS answer then
+  // means the password was wrong, and says so plainly).
+  // The name is asked on the very next screen, never here.
+  var doDoor = function () {
     var email = $("authEmail").value.trim(), pw = $("authPass").value;
     if (!email || !pw) { authBusy("Add your email and password first."); return; }
-    if (mode === "up") {
-      // Sign-up ASKS FOR THE NAME (the ruling): it is carried
-      // on the profile and used to address the user. The name
-      // rides a device stash across the sign-in reload, then
-      // lives in the account's own state for good.
-      var nm = $("authName").value.trim().slice(0, 60);
-      if (!nm) { authBusy("Add your name first — it's how we'll say hello."); return; }
-      try { localStorage.setItem("pace-pending-name", nm); } catch (e) {}
-    }
-    authBusy(mode === "up" ? "Creating your account…" : "Signing you in…");
-    var call = mode === "up" ? FB.emailSignUp(email, pw) : FB.emailSignIn(email, pw);
-    call.then(function (s) { ACTIVE_UID = s.uid; afterSignIn(); })
-      .catch(function (e) { authBusy(e.message); });
+    authBusy("One moment…");
+    FB.emailSignIn(email, pw).then(function (s) { ACTIVE_UID = s.uid; afterSignIn(); })
+      .catch(function (e) {
+        if (e && (e.code === "EMAIL_NOT_FOUND" || e.code === "INVALID_LOGIN_CREDENTIALS")) {
+          authBusy("Creating your account…");
+          FB.emailSignUp(email, pw).then(function (s) { ACTIVE_UID = s.uid; afterSignIn(); })
+            .catch(function (e2) {
+              if (e2 && e2.code === "EMAIL_EXISTS") authBusy("That email has an account, but the password does not match it. Try again, or tap Forgot password.");
+              else authBusy(e2.message);
+            });
+        } else authBusy(e.message);
+      });
   };
-  $("authSignIn").addEventListener("click", function () { doEmail("in"); });
-  $("authSignUp").addEventListener("click", function () { doEmail("up"); });
+  $("authGo").addEventListener("click", doDoor);
+  // The name screen: one question, then straight into the app.
+  var finishNameAsk = function () {
+    $("nameSheet").hidden = true;
+    try { localStorage.setItem("pace-name-asked", ACTIVE_UID || ""); } catch (e) {}
+    maybePotDoor();
+  };
+  $("nameAskGo").addEventListener("click", function () {
+    var nm = $("nameAsk").value.trim().slice(0, 60);
+    if (!nm) { $("nameMsg").textContent = "Add your name — it's how we'll say hello."; return; }
+    state.settings.profileName = nm; save(); renderAccount();
+    var wn = nm.split(/\s+/)[0];
+    if (wn && !$("welcome").hidden) $("welcomeTitle").textContent = "Welcome to Pace Calendar, " + wn;
+    toast("Hi " + wn + " — you're in.");
+    finishNameAsk();
+  });
+  $("nameAskSkip").addEventListener("click", finishNameAsk);
   $("authReset").addEventListener("click", function () {
     var email = $("authEmail").value.trim();
     if (!email) { authBusy("Type your email above first, then tap Forgot password."); return; }
