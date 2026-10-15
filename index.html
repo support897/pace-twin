@@ -267,6 +267,7 @@ try {
           <button id="clearSamples" class="soft-btn">Remove the sample tasks</button>
           <button id="guideAgain" class="soft-btn">Setup guide</button>
           <button id="importOpen2" class="soft-btn">Bring my calendar in</button>
+          <button id="plansOpen" class="soft-btn">Plans</button>
         </div>
         <p class="hint">On this device only.</p>
       </div>
@@ -354,6 +355,46 @@ try {
 </div>
 
 <!-- SETUP GUIDE (Skip the Ferry; Lab spec GUIDE-MASCOTS-001) -->
+<!-- THE UPGRADE MOMENT (never a nag): fires only when a
+     free user taps a Plus thing. It invites to Plans; it
+     never charges and never locks anything. -->
+<div id="plusSheet" class="sheet plus-sheet" hidden>
+  <div class="sheet-card plus-card">
+    <button id="plusClose" class="icon-btn guide-x" aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+    <div id="plusArt" class="plus-badge" aria-hidden="true"></div>
+    <h3 class="plus-title">That's a Plus thing.</h3>
+    <p class="plus-line">Plus holds the full set of Looks, Talk to it, repeating tasks, and a few more kind helpers.</p>
+    <p class="plus-line">Plus is A$4.99 a month, or A$39.99 a year. Your first month is free.</p>
+    <p class="plus-line plus-honest">Nothing is locked today, and nothing charges. This is simply where this will live when Plus arrives.</p>
+    <div class="sheet-actions">
+      <button id="plusNotNow" class="soft-btn">Not now</button>
+      <button id="plusPlans" class="primary-btn">See the plans</button>
+    </div>
+  </div>
+</div>
+
+<!-- PLANS (the truth, per state): chosen here or from the
+     popup — never during joining. Plus is not on sale yet. -->
+<div id="plansSheet" class="sheet" hidden>
+  <div class="sheet-card">
+    <h3>Plans</h3>
+    <div class="plan-card">
+      <h4>Free forever</h4>
+      <p>The calendar, the White and Black looks, your lists and habits. Free means free.</p>
+    </div>
+    <div class="plan-card plan-plus">
+      <h4>Plus</h4>
+      <p>When Plus arrives, it holds: all six Looks and Cute mode · Talk to it · repeating tasks · breaking a task into small steps · a stretch task borrowed from tomorrow · the energy levels in your own words · the To Do board · the kind round-up.</p>
+      <p class="plan-price">A$4.99 a month, or A$39.99 a year. First month free.</p>
+      <p>Or Plus for life: A$99.99, once.</p>
+      <p class="plan-state">Not on sale yet. Nothing to pay today.</p>
+    </div>
+    <div class="sheet-actions">
+      <button id="plansClose" class="soft-btn">Close</button>
+    </div>
+  </div>
+</div>
+
 <div id="guideSheet" class="sheet" hidden>
   <div class="sheet-card guide-card">
     <button id="guideClose" class="icon-btn guide-x" aria-label="Close guide"><svg class="ico"><use href="#i-x"/></svg></button>
