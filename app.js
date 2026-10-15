@@ -35,7 +35,8 @@ function defaultSettings() {
     notif: { perm: "off", checkin: true, start: true, setup: 5, digest: true, digestTimes: ["12:30", "16:30"], done: false, doneTime: "20:00" },
     pausedDate: null,
     appearance: { theme: "white", cute: false, photo: null, photoMode: "light", bgChoice: "theme" },
-    sidebarCollapsed: true
+    sidebarCollapsed: true,
+    profileName: ""
   };
 }
 function isObj(x) { return !!x && typeof x === "object" && !Array.isArray(x); }
@@ -100,6 +101,7 @@ function load(fromKey) {
     if (s.settings.appearance.bgChoice !== "photo" || !s.settings.appearance.photo) s.settings.appearance.bgChoice = "theme";
     if (typeof s.settings.sidebarCollapsed !== "boolean") s.settings.sidebarCollapsed = !!s.settings.sidebarCollapsed;
     s.settings.sidebarCollapsed = true; // Sidebar Adaptive Law, final shape: hidden on EVERY load; opening is per-session only.
+    if (typeof s.settings.profileName !== "string") s.settings.profileName = s.settings.profileName == null ? "" : String(s.settings.profileName);
     if (typeof s.settings.guideDone !== "boolean") s.settings.guideDone = !!s.settings.guideDone;
     var times = (Array.isArray(s.settings.notif.digestTimes) ? s.settings.notif.digestTimes : []).map(validClock).filter(Boolean);
     s.settings.notif.digestTimes = times.length ? times : ["12:30"];
@@ -1225,7 +1227,13 @@ function checkNotifications() {
 setInterval(checkNotifications, 30000);
 
 /* ---------- welcome ---------- */
-if (!state.welcomed) $("welcome").hidden = false;
+if (!state.welcomed) {
+  // Address the user by their own name when the profile
+  // carries one (asked at sign-up; theirs alone).
+  var wn = (state.settings.profileName || "").trim().split(/\s+/)[0];
+  if (wn) $("welcomeTitle").textContent = "Welcome to Pace Calendar, " + wn;
+  $("welcome").hidden = false;
+}
 $("welcomeSkip").addEventListener("click", function () { state.welcomed = true; save(); $("welcome").hidden = true; maybeGuide(); });
 $("welcomeNotif").addEventListener("click", function () { state.welcomed = true; save(); $("welcome").hidden = true; requestNotif(); maybeGuide(); });
 
@@ -1455,7 +1463,25 @@ function reconcileAccount() {
     // race the door loses on real networks (live-caught on the
     // twin journey: the door never fired, mock always won).
     maybePotDoor();
+    adoptPendingName();
   }).catch(function () { renderAccount(); });
+}
+/* The name asked at sign-up (or carried by a Google door)
+   lands on the profile AFTER reconcile settles — adopting it
+   earlier would stamp the local state and could win against
+   a newer server copy (Law B: never hide a user's data). */
+function adoptPendingName() {
+  try {
+    var pn = localStorage.getItem("pace-pending-name");
+    if (!pn) return;
+    localStorage.removeItem("pace-pending-name");
+    if (!ACTIVE_UID || state.settings.profileName) return;
+    state.settings.profileName = String(pn).slice(0, 60);
+    save();
+    var wn = state.settings.profileName.trim().split(/\s+/)[0];
+    if (wn && !$("welcome").hidden) $("welcomeTitle").textContent = "Welcome to Pace Calendar, " + wn;
+    renderAccount();
+  } catch (e) {}
 }
 /* The door's stamps key to the POT'S GENERATION (Security's
    precision): the same pot is never offered twice, a genuinely
@@ -1504,7 +1530,11 @@ function renderAccount() {
   var sess = FB.session();
   var note = $("accountNote");
   if (ACTIVE_UID && sess) {
-    $("accountLine").textContent = "Signed in as " + (sess.email || "your account") + ". Your calendar saves to your account and this device.";
+    var myName = (state.settings.profileName || "").trim();
+    var firstName = myName ? myName.split(/\s+/)[0] : "";
+    $("accountLine").textContent = (firstName ? "Hi " + firstName + " — signed in as " : "Signed in as ") + (sess.email || "your account") + ". Your calendar saves to your account and this device.";
+    var pnr = $("profileNameRow"), pni = $("profileName");
+    if (pnr && pni) { pnr.hidden = false; if (document.activeElement !== pni) pni.value = myName; }
     $("accountOpen").hidden = true; $("accountOut").hidden = false; $("accountDelete").hidden = false;
     var potNow = guestPot();
     $("accountBring").hidden = !(potNow && localStorage.getItem("pace-pot-consumed") !== potGeneration(potNow));
@@ -1514,6 +1544,7 @@ function renderAccount() {
     $("accountLine").textContent = "You are using Pace on this device only. Sign in to keep your calendar safe across devices.";
     $("accountOpen").hidden = false; $("accountOut").hidden = true; $("accountDelete").hidden = true;
     $("accountBring").hidden = true;
+    var pnr2 = $("profileNameRow"); if (pnr2) pnr2.hidden = true;
     var lastUid = null;
     try { lastUid = localStorage.getItem("pace-last-uid"); } catch (e) {}
     $("accountUncache").hidden = !(lastUid && localStorage.getItem(STORE + ":" + lastUid));
@@ -1530,11 +1561,25 @@ function afterSignIn() { try { localStorage.setItem("pace-last-uid", ACTIVE_UID 
 function bindAccounts() {
   if (!FB.configured) return;
   renderAccount();
+  var pni = $("profileName");
+  if (pni) pni.addEventListener("change", function () {
+    state.settings.profileName = pni.value.trim().slice(0, 60);
+    save(); renderAccount(); toast("We'll call you " + (state.settings.profileName.split(/\s+/)[0] || "friend") + " here.");
+  });
   $("accountOpen").addEventListener("click", openAuth);
   $("authClose").addEventListener("click", function () { $("authSheet").hidden = true; });
   var doEmail = function (mode) {
     var email = $("authEmail").value.trim(), pw = $("authPass").value;
     if (!email || !pw) { authBusy("Add your email and password first."); return; }
+    if (mode === "up") {
+      // Sign-up ASKS FOR THE NAME (the ruling): it is carried
+      // on the profile and used to address the user. The name
+      // rides a device stash across the sign-in reload, then
+      // lives in the account's own state for good.
+      var nm = $("authName").value.trim().slice(0, 60);
+      if (!nm) { authBusy("Add your name first — it's how we'll say hello."); return; }
+      try { localStorage.setItem("pace-pending-name", nm); } catch (e) {}
+    }
     authBusy(mode === "up" ? "Creating your account…" : "Signing you in…");
     var call = mode === "up" ? FB.emailSignUp(email, pw) : FB.emailSignIn(email, pw);
     call.then(function (s) { ACTIVE_UID = s.uid; afterSignIn(); })
