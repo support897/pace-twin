@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <!-- Pace Calendar mark: variant D finished (Ilse approved 14 Oct 2026).
+       Calendar page joined into Skip's hull like a cabin. Board palette. -->
+  <path d="M24 210 q16 -13 32 0 t32 0 t32 0 t32 0 t32 0 t32 0" fill="none" stroke="#AEB8EC" stroke-width="9" stroke-linecap="round"/>
+  <path d="M38 146 H202 L172 198 H68 Z" fill="#5B6BD5" stroke="#21392E" stroke-width="7" stroke-linejoin="round"/>
+  <line x1="120" y1="16" x2="120" y2="58" stroke="#21392E" stroke-width="6.5" stroke-linecap="round"/>
+  <rect x="64" y="56" width="112" height="114" rx="12" fill="#FAF4E4" stroke="#21392E" stroke-width="7"/>
+  <path d="M64 68 a12 12 0 0 1 12 -12 h88 a12 12 0 0 1 12 12 v15 H64 Z" fill="#5B6BD5"/>
+  <line x1="64" y1="83" x2="176" y2="83" stroke="#21392E" stroke-width="5"/>
+  <circle cx="90" cy="50" r="10" fill="none" stroke="#21392E" stroke-width="6.5"/>
+  <circle cx="150" cy="50" r="10" fill="none" stroke="#21392E" stroke-width="6.5"/>
+  <path d="M120 15 L151 24.5 L120 34 Z" fill="#2F7D4F"/>
+  <g fill="#21392E">
+    <circle cx="84" cy="103" r="4.2"/><circle cx="96" cy="103" r="4.2"/><circle cx="108" cy="103" r="4.2"/><circle cx="120" cy="103" r="4.2"/><circle cx="132" cy="103" r="4.2"/><circle cx="144" cy="103" r="4.2"/><circle cx="156" cy="103" r="4.2"/>
+    <circle cx="84" cy="121" r="4.2"/><circle cx="96" cy="121" r="4.2"/><circle cx="108" cy="121" r="4.2"/><circle cx="120" cy="121" r="4.2"/><circle cx="132" cy="121" r="4.2"/><circle cx="144" cy="121" r="4.2"/>
+  </g>
+  <circle cx="156" cy="121" r="4.2" fill="#F0A868"/>
+  <circle cx="106" cy="143" r="5.2" fill="#21392E"/><circle cx="134" cy="143" r="5.2" fill="#21392E"/>
+  <path d="M110 153 q10 8 20 0" fill="none" stroke="#21392E" stroke-width="5" stroke-linecap="round"/>
+</svg>
