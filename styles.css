@@ -258,6 +258,9 @@ html[data-sb="collapsed"] #main { padding-left: 70px; }
 
 .up-next { padding: 16px 2px; border-bottom: 1px solid var(--hair); font-size: 15px; }
 .up-next .un-label { color: var(--ink-3); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 3px; }
+/* F2 (final sweep): the Start button was a bare browser button
+   (34x21px) — now a real pill at the house tap floor. */
+.up-next button[data-un] { margin-left: 10px; min-height: 44px; padding: 10px 20px; border: 0; border-radius: 999px; background: var(--accent); color: #fff; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; vertical-align: middle; }
 .up-next button { border: 0; background: none; color: var(--accent); font-size: 15px; padding: 0; margin-left: 8px; }
 
 /* Calendar (FullCalendar restyle to flat iPhone look) */
@@ -427,11 +430,11 @@ html[data-cute="1"] .brand-mark { animation: wiggle 0.5s ease; }
 @keyframes wiggle { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-6deg); } 75% { transform: rotate(6deg); } }
 html[data-cute="1"] .add-btn { border-radius: 16px; }
 
-/* The content sliver (Ilse's nav ruling, 15 Oct): shown only
+/* The content sliver (the nav ruling, 15 Oct): shown only
    on phone widths while the menu is open — it covers the
    squeezed content strip; one tap on it closes the menu. */
 #sbSliver { display: none; }
-/* Phone: the Muse-app shape (Ilse's ruling, 15 Oct) — the open
+/* Phone: the Muse-app shape (the ruling, 15 Oct) — the open
    menu takes most of the screen, the content shrinks to a thin
    sliver at the right edge, and tapping the sliver (or the
    close button) brings the full content back. Hidden on every
