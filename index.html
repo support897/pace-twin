@@ -25,7 +25,7 @@ try {
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
-    <symbol id="i-logo" viewBox="0 0 240 240">  <!-- Pace Calendar mark: variant D finished (Ilse approved 14 Oct 2026).
+    <symbol id="i-logo" viewBox="0 0 240 240">  <!-- Pace Calendar mark: variant D finished (approved 14 Oct 2026).
        Calendar page joined into Skip's hull like a cabin. Board palette. -->
   <path d="M24 210 q16 -13 32 0 t32 0 t32 0 t32 0 t32 0 t32 0" fill="none" stroke="#AEB8EC" stroke-width="9" stroke-linecap="round"/>
   <path d="M38 146 H202 L172 198 H68 Z" fill="#5B6BD5" stroke="#21392E" stroke-width="7" stroke-linejoin="round"/>
@@ -273,6 +273,7 @@ try {
       <div class="settings-group" id="accountGroup" hidden>
         <h3>Account</h3>
         <p class="hint" id="accountLine">You are using Pace on this device only.</p>
+        <label class="row" id="profileNameRow" hidden>Your name <input type="text" id="profileName" autocomplete="name" placeholder="How should we address you?"></label>
         <div class="draft-actions">
           <button id="accountOpen" class="primary-btn">Sign in</button>
           <button id="accountOut" class="soft-btn" hidden>Sign out</button>
@@ -396,7 +397,7 @@ try {
 <!-- WELCOME -->
 <div id="welcome" class="sheet" hidden>
   <div class="sheet-card">
-    <h3>Welcome to Pace Calendar</h3>
+    <h3 id="welcomeTitle">Welcome to Pace Calendar</h3>
     <p><strong>Your day, at your pace.</strong></p>
     <p>The day shapes itself around you.</p>
     <div class="sheet-actions">
@@ -415,8 +416,9 @@ try {
       <button id="googleBtn" class="soft-btn">Continue with Google</button>
       <button id="appleBtn" class="soft-btn" hidden>Continue with Apple</button>
     </div>
-    <label class="row">Email <input type="email" id="authEmail" autocomplete="email" placeholder="you@example.com"></label>
-    <label class="row">Password <input type="password" id="authPass" autocomplete="current-password" placeholder="Your password"></label>
+    <label class="field">Your name <input type="text" id="authName" autocomplete="name" placeholder="Asked when you create an account"></label>
+    <label class="field">Email <input type="email" id="authEmail" autocomplete="email" placeholder="you@example.com"></label>
+    <label class="field">Password <input type="password" id="authPass" autocomplete="current-password" placeholder="Your password"></label>
     <p class="hint" id="authMsg" role="status"></p>
     <div class="draft-actions">
       <button id="authSignIn" class="primary-btn">Sign in</button>
@@ -446,7 +448,7 @@ try {
   <div class="sheet-card">
     <h3>Delete your account?</h3>
     <p class="hint">This deletes your account and everything saved to it. Your guest calendar on this device is not touched. This cannot be undone.</p>
-    <label class="row">Password, to be sure <input type="password" id="deletePass" autocomplete="current-password"></label>
+    <label class="field">Password, to be sure <input type="password" id="deletePass" autocomplete="current-password"></label>
     <p class="hint" id="deleteMsg" role="status"></p>
     <div class="sheet-actions">
       <button id="deleteCancel" class="soft-btn">Keep my account</button>
