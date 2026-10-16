@@ -109,6 +109,16 @@
     "Smallest version (low days)": "La versión más pequeña (días bajos)",
     "The Pace mark brings it back.": "El icono de Pace lo trae de vuelta.",
     "Title": "Título",
+    "Menu": "Menú",
+    "Hide the menu": "Ocultar el menú",
+    "Show the menu": "Mostrar el menú",
+    "Close the menu": "Cerrar el menú",
+    "Calendar view": "Vista del calendario",
+    "Day strip": "Tira del día",
+    "New to-do": "Pendiente nuevo",
+    "Add to-do": "Añadir pendiente",
+    "New habit name": "Nombre del hábito nuevo",
+    "Pick an icon": "Elige un icono",
     "Bad day is called": "El día malo se llama",
     "Great day is called": "El día genial se llama",
     "Ok day is called": "El día regular se llama",
@@ -385,7 +395,7 @@
       });
     });
     (root || document).querySelectorAll("[data-i18n-ph]").forEach(function (el) { el.placeholder = t(el.placeholder); });
-    (root || document).querySelectorAll("[data-i18n-aria]").forEach(function (el) { el.setAttribute("aria-label", t(el.getAttribute("aria-label") || "")); });
+    (root || document).querySelectorAll("[data-i18n-aria]").forEach(function (el) { var a = el.getAttribute("aria-label"); if (a) el.setAttribute("aria-label", t(a)); var ti = el.getAttribute("title"); if (ti) el.setAttribute("title", t(ti)); });
     document.documentElement.setAttribute("lang", LANG);
   }
   window.applyI18n = applyI18n;
