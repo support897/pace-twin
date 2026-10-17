@@ -41,6 +41,23 @@
     };
     return map[code] || "Something did not work. Check your connection and try again.";
   }
+  // B-F1 (17 Oct): the ONE translator between provider errors and
+  // the user's eyes. Raw provider text (Firestore messages, fetch
+  // TypeErrors) never reaches the screen: every display site routes
+  // through here. Known auth codes speak precisely via friendly();
+  // anything else is classified by shape into a calm line.
+  function userError(e) {
+    if (e && e.code) return friendly(e.code);
+    var m = (e && e.message) || "";
+    if ((e && e.name === "TypeError") || /failed to fetch|networkerror|load failed/i.test(m)) {
+      return "No connection right now. Your calendar is safe on this device.";
+    }
+    if (e && e.status === 403) {
+      return "Your account could not be reached. What you see is saved on this device.";
+    }
+    return "Something did not work. Try again.";
+  }
+
   function authCall(name, body) {
     return fetch(idpUrl(name), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
       .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
@@ -125,6 +142,7 @@
     });
   }
   var api = {
+    userError: userError,
     configured: configured,
     session: function () { return session; },
     emailSignUp: function (email, pw) { return authCall("signUp", { email: email, password: pw, returnSecureToken: true }).then(function (j) { return adopt(j, email); }); },
