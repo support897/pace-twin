@@ -11,7 +11,7 @@ var STORE = "calmcal-v1";
    per account — so accounts on one device never bleed across. The
    legacy bare key migrates to the guest key on first boot (the
    original stays, frozen, as a backup; nothing is ever deleted). */
-var FB = window.PaceFB || { configured: false, session: function () { return null; } };
+var FB = window.PaceFB || { configured: false, session: function () { return null; }, userError: function () { return "Something did not work. Try again."; } };
 var ACTIVE_UID = null;
 try { var sess0 = FB.configured ? FB.session() : null; if (sess0 && sess0.uid) ACTIVE_UID = String(sess0.uid); } catch (e) {}
 function storeKey() { return ACTIVE_UID ? STORE + ":" + ACTIVE_UID : STORE + ":guest"; }
@@ -1709,9 +1709,9 @@ function bindAccounts() {
           FB.emailSignUp(email, pw).then(function (s) { ACTIVE_UID = s.uid; afterSignIn(); })
             .catch(function (e2) {
               if (e2 && e2.code === "EMAIL_EXISTS") authBusy(tr("That email has an account, but the password does not match it. Try again, or tap Forgot password."));
-              else authBusy(e2.message);
+              else authBusy(tr(FB.userError(e2)));
             });
-        } else authBusy(e.message);
+        } else authBusy(tr(FB.userError(e)));
       });
   };
   $("authGo").addEventListener("click", doDoor);
@@ -1749,7 +1749,7 @@ function bindAccounts() {
     var email = $("authEmail").value.trim();
     if (!email) { authBusy(tr("Type your email above first, then tap Forgot password.")); return; }
     FB.sendPasswordReset(email).then(function () { authBusy(tr("Reset email sent. Follow its link, then sign in here.")); })
-      .catch(function (e) { authBusy(e.message); });
+      .catch(function (e) { authBusy(tr(FB.userError(e))); });
   });
   $("googleBtn").addEventListener("click", function () {
     var cid = window.PACE_FB_CONFIG && window.PACE_FB_CONFIG.googleClientId;
@@ -1760,7 +1760,7 @@ function bindAccounts() {
         client_id: cid,
         callback: function (resp) {
           FB.googleSignIn(resp.credential).then(function (s) { ACTIVE_UID = s.uid; afterSignIn(); })
-            .catch(function (e) { authBusy(e.message); });
+            .catch(function (e) { authBusy(tr(FB.userError(e))); });
         },
       });
       window.google.accounts.id.prompt();
@@ -1823,7 +1823,7 @@ function bindAccounts() {
         try { localStorage.removeItem(storeKey()); localStorage.removeItem("pace-last-uid"); } catch (e) {}
         location.reload();
       })
-      .catch(function (e) { DELETING = false; $("deleteMsg").textContent = e.message || tr("That did not work. Nothing was deleted."); });
+      .catch(function (e) { DELETING = false; $("deleteMsg").textContent = (e && e.code) ? tr(FB.userError(e)) : tr("That did not work. Nothing was deleted."); });
   });
   reconcileAccount();
 }
