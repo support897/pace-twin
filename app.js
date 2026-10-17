@@ -1773,7 +1773,36 @@ function bindAccounts() {
       document.head.appendChild(sc);
     }
   });
-  $("appleBtn").addEventListener("click", function () { authBusy("Apple sign-in arrives with the iOS launch. Email + password works now."); });
+  $("appleBtn").addEventListener("click", function () {
+    // The Apple door (wired 17 Oct, behind appleEnabled + the
+    // Services ID the developer sitting creates): Apple's own JS
+    // runs the sign-in popup; the id_token it returns crosses to
+    // Firebase through FB.appleSignIn. While the flag is off the
+    // button is hidden and this handler is unreachable.
+    var cfgA = window.PACE_FB_CONFIG || {};
+    if (!cfgA.appleEnabled || !cfgA.appleClientId) { authBusy(tr("Apple sign-in is not switched on yet. Email + password works now.")); return; }
+    authBusy(tr("Opening Apple…"));
+    var go = function () {
+      try {
+        window.AppleID.auth.init({ clientId: cfgA.appleClientId, scope: "name email", redirectURI: location.origin + location.pathname, state: "pace-door", usePopup: true });
+        window.AppleID.auth.signIn().then(function (res) {
+          try { // Apple offers the name only on the FIRST authorisation — carry it for the tour, like any door name.
+            var nm = res && res.user && res.user.name;
+            if (nm && (nm.firstName || nm.lastName) && !localStorage.getItem("pace-pending-name")) localStorage.setItem("pace-pending-name", [nm.firstName, nm.lastName].filter(Boolean).join(" ").slice(0, 60));
+          } catch (e) {}
+          FB.appleSignIn(res.authorization.id_token).then(function (sess) { ACTIVE_UID = sess.uid; afterSignIn(); })
+            .catch(function (e) { authBusy(tr(FB.userError(e))); });
+        }).catch(function () { authBusy(tr("Apple sign-in was closed. Nothing changed.")); });
+      } catch (e) { authBusy(tr("Apple sign-in was closed. Nothing changed.")); }
+    };
+    if (window.AppleID && window.AppleID.auth) go();
+    else {
+      var sc = document.createElement("script");
+      sc.src = "https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js";
+      sc.onload = go; sc.onerror = function () { authBusy(tr("Apple did not load. Check your connection, or use email + password.")); };
+      document.head.appendChild(sc);
+    }
+  });
   $("accountOut").addEventListener("click", function () {
     try { localStorage.setItem("pace-last-uid", ACTIVE_UID || ""); } catch (e) {}
     FB.signOut(); location.reload();
